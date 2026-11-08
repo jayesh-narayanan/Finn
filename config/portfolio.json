@@ -1,0 +1,31 @@
+{
+  "_comment": "Mock portfolio: 18 NSE names across sectors and sizes. Edit freely; the engine works on any NSE symbol.",
+  "portfolio": [
+    {"symbol": "RELIANCE",   "name": "Reliance Industries",      "sector": "Conglomerate",       "size": "large"},
+    {"symbol": "HDFCBANK",   "name": "HDFC Bank",                "sector": "Banks",              "size": "large"},
+    {"symbol": "TCS",        "name": "Tata Consultancy Services","sector": "IT services",        "size": "large"},
+    {"symbol": "BHARTIARTL", "name": "Bharti Airtel",            "sector": "Telecom",            "size": "large"},
+    {"symbol": "LT",         "name": "Larsen & Toubro",          "sector": "Engineering",        "size": "large"},
+    {"symbol": "SUNPHARMA",  "name": "Sun Pharmaceutical",       "sector": "Pharma",             "size": "large"},
+    {"symbol": "MARUTI",     "name": "Maruti Suzuki",            "sector": "Autos",              "size": "large"},
+    {"symbol": "BAJFINANCE", "name": "Bajaj Finance",            "sector": "NBFC",               "size": "large"},
+    {"symbol": "TITAN",      "name": "Titan Company",            "sector": "Consumer",           "size": "large"},
+    {"symbol": "TRENT",      "name": "Trent",                    "sector": "Retail",             "size": "large"},
+    {"symbol": "TATAPOWER",  "name": "Tata Power",               "sector": "Power",              "size": "large"},
+    {"symbol": "DIXON",      "name": "Dixon Technologies",       "sector": "Electronics mfg",    "size": "mid"},
+    {"symbol": "POLYCAB",    "name": "Polycab India",            "sector": "Cables",             "size": "mid"},
+    {"symbol": "PERSISTENT", "name": "Persistent Systems",       "sector": "IT services",        "size": "mid"},
+    {"symbol": "KPITTECH",   "name": "KPIT Technologies",        "sector": "Auto software",      "size": "mid"},
+    {"symbol": "DEEPAKNTR",  "name": "Deepak Nitrite",           "sector": "Chemicals",          "size": "mid"},
+    {"symbol": "CDSL",       "name": "Central Depository Services","sector": "Capital markets",  "size": "mid"},
+    {"symbol": "KAYNES",     "name": "Kaynes Technology",        "sector": "Electronics mfg",    "size": "small"}
+  ],
+  "research_demo": ["PIDILITIND", "ASTRAL", "HAL", "NAUKRI"],
+  "default_rules": {
+    "volume_multiple": 2.0,
+    "volume_lookback": 20,
+    "price_move_pct": 4.0,
+    "alert_categories": ["results", "M&A", "management_change", "litigation", "fund_raise", "credit_rating", "pledging"],
+    "muted_categories": ["investor_meetings", "unclassified"]
+  }
+}

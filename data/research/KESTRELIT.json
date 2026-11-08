@@ -1,0 +1,638 @@
+{
+ "symbol": "KESTRELIT",
+ "name": "Kestrel Infotech",
+ "basis": "consolidated",
+ "mode": "sample",
+ "generated_at": "2026-11-08T15:56:45",
+ "sources": [
+  {
+   "id": "SCR-PL",
+   "type": "statements",
+   "label": "Profit & loss, annual",
+   "url": null
+  },
+  {
+   "id": "SCR-Q",
+   "type": "statements",
+   "label": "Quarterly results",
+   "url": null
+  },
+  {
+   "id": "SCR-BS",
+   "type": "statements",
+   "label": "Balance sheet",
+   "url": null
+  },
+  {
+   "id": "SCR-CF",
+   "type": "statements",
+   "label": "Cash flow statement",
+   "url": null
+  },
+  {
+   "id": "SCR-RATIOS",
+   "type": "statements",
+   "label": "Efficiency ratios",
+   "url": null
+  },
+  {
+   "id": "SCR-TOP",
+   "type": "statements",
+   "label": "Key ratios",
+   "url": null
+  },
+  {
+   "id": "T1",
+   "type": "transcript",
+   "label": "Q2 FY27 earnings call",
+   "url": null
+  },
+  {
+   "id": "T2",
+   "type": "transcript",
+   "label": "Q1 FY27 earnings call",
+   "url": null
+  },
+  {
+   "id": "T3",
+   "type": "transcript",
+   "label": "Q4 FY26 earnings call",
+   "url": null
+  },
+  {
+   "id": "T4",
+   "type": "transcript",
+   "label": "Q3 FY26 earnings call",
+   "url": null
+  },
+  {
+   "id": "A1",
+   "type": "annual_report",
+   "label": "Annual report 2026",
+   "url": null
+  }
+ ],
+ "snapshot": {
+  "what_it_does": "Kestrel builds and runs software for banks, insurers and retailers, mostly under multi-year managed-services contracts. About two-thirds of revenue comes from North America.",
+  "segments": [
+   {
+    "name": "Banking & financial services",
+    "share_pct": 46,
+    "note": "Core banking, payments",
+    "page": 38
+   },
+   {
+    "name": "Insurance",
+    "share_pct": 22,
+    "note": "Policy admin platforms",
+    "page": 38
+   },
+   {
+    "name": "Retail & CPG",
+    "share_pct": 19,
+    "note": "Commerce, supply chain",
+    "page": 39
+   },
+   {
+    "name": "Others",
+    "share_pct": 13,
+    "note": "Healthcare, travel",
+    "page": 39
+   }
+  ],
+  "geography": "North America 64%, Europe 24%, India and rest 12%",
+  "customers": "Top 10 clients \u2248 41% of revenue",
+  "source": "A1"
+ },
+ "metrics": {
+  "is_financial": false,
+  "headline": [
+   {
+    "label": "Market cap",
+    "value": 62000,
+    "unit": "\u20b9 cr",
+    "cite": "SCR-TOP",
+    "hint": null
+   },
+   {
+    "label": "P/E",
+    "value": 37.4,
+    "unit": "\u00d7",
+    "cite": "SCR-TOP",
+    "hint": null
+   },
+   {
+    "label": "Revenue FY26",
+    "value": 10870,
+    "unit": "\u20b9 cr",
+    "cite": "SCR-PL",
+    "hint": "+12% YoY"
+   },
+   {
+    "label": "EBITDA margin",
+    "value": 22.1,
+    "unit": "%",
+    "cite": "SCR-PL",
+    "hint": null
+   },
+   {
+    "label": "PAT FY26",
+    "value": 1610,
+    "unit": "\u20b9 cr",
+    "cite": "SCR-PL",
+    "hint": "+10% YoY"
+   },
+   {
+    "label": "ROCE",
+    "value": 26.8,
+    "unit": "%",
+    "cite": "SCR-TOP",
+    "hint": null
+   },
+   {
+    "label": "ROE",
+    "value": 20.1,
+    "unit": "%",
+    "cite": "SCR-TOP",
+    "hint": null
+   }
+  ],
+  "trajectory": {
+   "years": [
+    "FY20",
+    "FY21",
+    "FY22",
+    "FY23",
+    "FY24",
+    "FY25",
+    "FY26"
+   ],
+   "revenue": [
+    4780,
+    5320,
+    6410,
+    7550,
+    8460,
+    9740,
+    10870
+   ],
+   "op_profit": [
+    1176,
+    1330,
+    1526,
+    1752,
+    1937,
+    2201,
+    2402
+   ],
+   "margin": [
+    24.6,
+    25.0,
+    23.8,
+    23.2,
+    22.9,
+    22.6,
+    22.1
+   ],
+   "pat": [
+    812,
+    905,
+    1060,
+    1210,
+    1342,
+    1470,
+    1610
+   ],
+   "notes": [
+    {
+     "text": "Revenue compounded 12.9% a year over 3 years; profit 10.0%",
+     "cite": "SCR-PL",
+     "tone": "neutral"
+    },
+    {
+     "text": "Margin compressed 1.1 pts in 3 years (23% \u2192 22%)",
+     "cite": "SCR-PL",
+     "tone": "bad"
+    },
+    {
+     "text": "Quarterly revenue growth decelerating: 8% YoY over the last two quarters vs 12% in the two before",
+     "cite": "SCR-Q",
+     "tone": "bad"
+    }
+   ],
+   "quarterly": {
+    "periods": [
+     "Dec 2024",
+     "Mar 2025",
+     "Jun 2025",
+     "Sep 2025",
+     "Dec 2025",
+     "Mar 2026",
+     "Jun 2026",
+     "Sep 2026"
+    ],
+    "revenue": [
+     2470,
+     2540,
+     2612,
+     2640,
+     2770,
+     2845,
+     2803,
+     2862
+    ],
+    "pat": [
+     380,
+     392,
+     398,
+     402,
+     409,
+     412,
+     421,
+     408
+    ],
+    "margin": [
+     22.9,
+     22.2,
+     22.0,
+     22.0,
+     22.1,
+     21.9,
+     21.8,
+     20.9
+    ],
+    "rev_yoy": [
+     14.2,
+     13.4,
+     12.6,
+     9.5,
+     12.1,
+     12.0,
+     7.3,
+     8.4
+    ],
+    "pat_yoy": [
+     10.5,
+     11.4,
+     10.6,
+     8.1,
+     7.6,
+     5.1,
+     5.8,
+     1.5
+    ]
+   }
+  },
+  "balance_sheet": {
+   "years": [
+    "FY20",
+    "FY21",
+    "FY22",
+    "FY23",
+    "FY24",
+    "FY25",
+    "FY26"
+   ],
+   "debt": [
+    0,
+    0,
+    40,
+    60,
+    55,
+    30,
+    20
+   ],
+   "equity": [
+    3520,
+    4110,
+    4820,
+    5580,
+    6330,
+    7210,
+    8120
+   ],
+   "de": [
+    0.0,
+    0.0,
+    0.01,
+    0.01,
+    0.01,
+    0.0,
+    0.0
+   ],
+   "ccc": [
+    64,
+    63,
+    66,
+    68,
+    71,
+    74,
+    79
+   ],
+   "wc_days": null,
+   "notes": [
+    {
+     "text": "Effectively debt-free: debt is 0.00\u00d7 equity",
+     "cite": "SCR-BS",
+     "tone": "good"
+    },
+    {
+     "text": "Cash conversion cycle 79 days, up 11 days in 3 years",
+     "cite": "SCR-RATIOS",
+     "tone": "neutral"
+    }
+   ]
+  },
+  "cash": {
+   "years": [
+    "FY20",
+    "FY21",
+    "FY22",
+    "FY23",
+    "FY24",
+    "FY25",
+    "FY26"
+   ],
+   "cfo": [
+    760,
+    860,
+    990,
+    1120,
+    1240,
+    1330,
+    1460
+   ],
+   "pat": [
+    812,
+    905,
+    1060,
+    1210,
+    1342,
+    1470,
+    1610
+   ],
+   "conversion": [
+    94,
+    95,
+    93,
+    93,
+    92,
+    90,
+    91
+   ],
+   "fcf": [
+    450,
+    580,
+    570,
+    640,
+    720,
+    720,
+    770
+   ],
+   "notes": [
+    {
+     "text": "Over 5 years, operating cash flow was 92% of reported profit \u2014 profits are turning into cash",
+     "cite": "SCR-CF",
+     "tone": "good"
+    }
+   ]
+  }
+ },
+ "guidance": [
+  {
+   "id": "T3-G1",
+   "src": "T3",
+   "quarter": "Q4 FY26",
+   "metric": "revenue_growth",
+   "low": 10,
+   "high": null,
+   "unit": "%",
+   "period": "FY27",
+   "page": 4,
+   "statement": "Double-digit constant-currency revenue growth in FY27",
+   "quote": "we are confident of delivering double-digit growth in FY27 given the deal wins we have already booked"
+  },
+  {
+   "id": "T3-G2",
+   "src": "T3",
+   "quarter": "Q4 FY26",
+   "metric": "margin",
+   "low": 21,
+   "high": 23,
+   "unit": "%",
+   "period": "FY27",
+   "page": 6,
+   "statement": "EBITDA margin held in a 21\u201323% band",
+   "quote": "we will hold our operating margin in the 21 to 23 percent band through the year"
+  },
+  {
+   "id": "T4-G1",
+   "src": "T4",
+   "quarter": "Q3 FY26",
+   "metric": "capex",
+   "low": 400,
+   "high": null,
+   "unit": "cr",
+   "period": "FY27",
+   "page": 9,
+   "statement": "\u20b9400 cr capex on the Pune delivery campus",
+   "quote": "the Pune campus will need about 400 crores of capex largely in FY27"
+  },
+  {
+   "id": "T2-G1",
+   "src": "T2",
+   "quarter": "Q1 FY27",
+   "metric": "other",
+   "low": null,
+   "high": null,
+   "unit": "other",
+   "period": "H2 FY27",
+   "page": 3,
+   "statement": "Deal ramp-ups to lift growth in the second half",
+   "quote": "the ramp-up of the two large BFSI deals should show up in revenue from the second half"
+  },
+  {
+   "id": "T1-G1",
+   "src": "T1",
+   "quarter": "Q2 FY27",
+   "metric": "revenue_growth",
+   "low": 8,
+   "high": 9,
+   "unit": "%",
+   "period": "FY27",
+   "page": 2,
+   "statement": "FY27 growth now seen at high single digits",
+   "quote": "we now see the year closer to high single digit growth as two clients deferred programmes"
+  }
+ ],
+ "claims": [
+  {
+   "id": "T2-C1",
+   "src": "T2",
+   "quarter": "Q1 FY27",
+   "topic": "demand",
+   "page": 2,
+   "claim": "Deal pipeline at an all-time high",
+   "quote": "our pipeline is at an all time high and win rates are improving"
+  },
+  {
+   "id": "T1-C1",
+   "src": "T1",
+   "quarter": "Q2 FY27",
+   "topic": "margins",
+   "page": 5,
+   "claim": "Margin dip is one-off from wage hikes",
+   "quote": "the margin dip this quarter is one off and reflects the wage cycle"
+  }
+ ],
+ "pushback": [
+  {
+   "id": "T1-P1",
+   "src": "T1",
+   "quarter": "Q2 FY27",
+   "topic": "receivables",
+   "page": 11,
+   "question": "Why have receivable days risen for three straight years?",
+   "quote": "can you explain why receivable days have gone up again this quarter"
+  }
+ ],
+ "extracts": [],
+ "analysis": {
+  "one_line": "Guided double digits, is tracking 8\u20139% and has quietly lowered the bar; margin promise slipped below its own band in Q2.",
+  "scorecard": [
+   {
+    "promise": "Double-digit revenue growth in FY27",
+    "made_in": "Q4 FY26",
+    "period": "FY27",
+    "delivered": "7.3% YoY in Q1 and 8.4% in Q2. On the Q2 call the outlook was cut to high single digits.",
+    "verdict": "walked_back",
+    "evidence": [
+     "T3-G1",
+     "T1-G1",
+     "F:Q7",
+     "F:Q6"
+    ]
+   },
+   {
+    "promise": "EBITDA margin within 21\u201323%",
+    "made_in": "Q4 FY26",
+    "period": "FY27",
+    "delivered": "21.8% in Q1, then 20.9% in Q2: below the band's floor.",
+    "verdict": "missed",
+    "evidence": [
+     "T3-G2",
+     "F:Q6",
+     "F:Q7"
+    ]
+   },
+   {
+    "promise": "Large-deal ramp-up lifts H2 revenue",
+    "made_in": "Q1 FY27",
+    "period": "H2 FY27",
+    "delivered": "H2 not reported yet; Q2 growth slowed to 2.1% QoQ.",
+    "verdict": "too_early",
+    "evidence": [
+     "T2-G1",
+     "F:Q7"
+    ]
+   },
+   {
+    "promise": "\u20b9400 cr Pune campus capex",
+    "made_in": "Q3 FY26",
+    "period": "FY27",
+    "delivered": "Investing outflow of \u20b9690 cr in FY26 suggests spend began early; FY27 not reported.",
+    "verdict": "on_track",
+    "evidence": [
+     "T4-G1",
+     "F:FY26"
+    ]
+   }
+  ],
+  "narrative_gaps": [
+   {
+    "says": "Pipeline at an all-time high (Q1 FY27)",
+    "numbers_show": "Revenue growth slowed from ~12% YoY to ~8% in the two quarters after the claim.",
+    "verdict": "diverges",
+    "evidence": [
+     "T2-C1",
+     "F:Q7",
+     "M3"
+    ]
+   },
+   {
+    "says": "Q2 margin dip is one-off",
+    "numbers_show": "Margin has slipped every year since FY21 (25.0% \u2192 22.1%); Q2 extends a trend rather than breaking one.",
+    "verdict": "diverges",
+    "evidence": [
+     "T1-C1",
+     "M2"
+    ]
+   },
+   {
+    "says": "Capital-light growth",
+    "numbers_show": "Operating cash flow covered ~91% of profit over 5 years.",
+    "verdict": "agrees",
+    "evidence": [
+     "M6"
+    ]
+   }
+  ],
+  "bull": [
+   {
+    "text": "Still compounding: revenue up ~13% a year over FY23\u201326 with ROCE near 27%.",
+    "evidence": [
+     "M1",
+     "F:FY26"
+    ]
+   },
+   {
+    "text": "Profits convert to cash (~91% over 5 years), so the dividend capacity is real.",
+    "evidence": [
+     "M6"
+    ]
+   },
+   {
+    "text": "If the two large BFSI deals ramp as described, H2 can recover growth.",
+    "evidence": [
+     "T2-G1"
+    ]
+   }
+  ],
+  "bear": [
+   {
+    "text": "Guidance already cut once this year; the H2 recovery is the second promise on the same deals.",
+    "evidence": [
+     "T1-G1",
+     "T2-G1"
+    ]
+   },
+   {
+    "text": "Margins below the stated band with a wage cycle still to absorb.",
+    "evidence": [
+     "T3-G2",
+     "F:Q7"
+    ]
+   },
+   {
+    "text": "Cash cycle up 11 days in three years as clients pay slower, which analysts flagged on the call.",
+    "evidence": [
+     "M5",
+     "T1-P1"
+    ]
+   }
+  ],
+  "dropped_ungrounded": 1
+ },
+ "llm": true,
+ "cost": {
+  "calls": 6,
+  "cached": 0,
+  "tokens_in": 41200,
+  "tokens_out": 5300,
+  "usd": 0.0118,
+  "by_tier": {
+   "fast": 5,
+   "smart": 1
+  }
+ }
+}

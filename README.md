@@ -1,0 +1,89 @@
+# FINN
+
+A mobile-first investment agent for an Indian equity portfolio. It does two things:
+
+- **Push (Brief).** Opens on the filter itself: *"5 of 67 filings need you."* Every NSE filing in the window is classified, scored for materiality and sorted into three tiers that look different on purpose: full cards for what needs you, one-line rows for what's worth knowing, and a single folded line for routine paperwork. You clear the queue to zero like an inbox.
+- **Pull (Research).** For any NSE symbol, a dossier led by **promises vs delivery**: every piece of guidance from the last four earnings calls, checked against the numbers reported since. Every line links to the transcript quote or the reported figure it rests on.
+
+The third screen, **Watch**, is where the investor defines "unusual" (price move, volume multiple, baseline) and routes each filing type to Alert, Brief or Mute, with a live 90-session backtest showing how many alerts that setting would have produced.
+
+## Run it
+
+```bash
+pip install -r requirements.txt
+python -m finn sample          # fictional demo data, no network or key needed
+python -m finn serve           # http://localhost:8000 — open on your phone via your LAN IP
+```
+
+Live data:
+
+```bash
+cp .env.example .env           # add a free Gemini (or Groq/OpenRouter/Ollama) key
+python -m finn refresh         # prices + NSE filings + enrichment -> data/feed.json
+python -m finn research --demo # dossiers for config research_demo
+python -m finn research HAL    # any NSE symbol screener.in covers
+python -m pytest -q
+```
+
+Edit the portfolio in `config/portfolio.json`. Without a model key everything still runs: classification, scoring, alerts and all the financial analysis are deterministic; only one-liners, management bios, guidance extraction and the promises scorecard need a model.
+
+### Deploy
+
+- **Static (simplest to try on a phone):** `python -m finn build-static` writes `dist/` with the app and the latest data. Drop it on Vercel, Netlify or GitHub Pages. Research is limited to dossiers you built.
+- **With the server:** any Python host (Render, Railway, Fly) running `python -m finn serve --port $PORT`. NSE blocks many cloud IP ranges, so the reliable pattern is to run `refresh` from a home machine or a scheduled job and push `data/`.
+
+## How it works
+
+```
+                 ┌────────── push ──────────┐            ┌─────────────── pull ───────────────┐
+ Yahoo chart ──▶ prices ─┐                  │  screener ─▶ statements ─▶ metrics.py (no model) │
+ NSE API  ─────▶ filings ─▶ classify (rules) │            └▶ last 4 transcripts ─▶ BM25 top-10   │
+                          ▶ score (rules)   │                 chunks ─▶ fast model ─▶ quotes    │
+                          ▶ enrich ─────────┤                 verified against PDF text         │
+                            results: parse PDF, model only if parsing fails, numbers verified    │
+                            mgmt: profile from the filing (+ optional web search)               │
+                            others: exchange text, or one batched fast-model line                │
+                          ▶ data/feed.json  │            ─▶ smart model, ONE call: scorecard,   │
+                                            │               story vs numbers, bull/bear         │
+ app (vanilla JS) ◀── evaluates your alert rules on the device; ── citations validated ─▶ data/research/SYM.json
+```
+
+### Decisions and trade-offs
+
+- **Rules before models.** Exchange subjects are semi-standardised, so ~25 ordered regexes classify most filings for free; only leftovers go to the model, batched 25 at a time. Materiality scoring is rules too, and every point it adds is shown to the user as a reason ("CFO change", "₹420 cr ≈ 5.9% of market cap", "stock moved −5.8%, 2.4σ"). A ranking the investor can audit beats one they have to trust.
+- **Results are read from the filing, not a model's memory.** Indian results filings print exactly the three columns the brief asks for (this quarter, last quarter, same quarter last year), so a parser reads Revenue, PBT, PAT, finance costs, depreciation and other income from the consolidated table, and EBITDA is derived and labelled as such. The fast model is a fallback, and any number it returns must appear in the PDF text or it's discarded.
+- **Management bios come from the filing first.** SEBI requires a brief profile of appointees in the disclosure itself, so that's the primary source. Web enrichment (Tavily) is optional and labelled "from the web". LinkedIn is not scraped: it's behind a login and against its terms.
+- **The grounding contract on the pull side.** The model never sees "the company"; it sees ids: `T2-G1` (a verified transcript quote), `F:Q6` (a reported quarter), `M3` (a computed observation). Every output line must cite ids that exist; anything else is dropped and the count is shown on the dossier. Quotes the extraction model paraphrased or invented are dropped before analysis.
+- **Arithmetic is not judgment.** Trajectory, leverage, working-capital cycle and cash conversion are computed in Python from the statements. They cost nothing and cannot hallucinate. The model is spent only where reading and reasoning are needed.
+- **Model routing.** Fast tier (default `gemini-2.5-flash-lite`) for bulk extraction; smart tier (default `gemini-2.5-flash`) for one reconciliation call per dossier and for "why/compare/risk" questions. Any OpenAI-compatible endpoint works. Every call is cached on (model, prompt) in SQLite and metered; the app shows what each brief and dossier cost.
+- **Alerts run on the device.** The feed ships 120 sessions of EOD data, so moving a slider re-ranks the brief and re-runs the backtest instantly, with no round trip.
+- **Vanilla JS, no build.** The app is static files and JSON, so it hosts anywhere and works without the server.
+- **Sample data is fictional.** So the demo runs offline without attaching invented facts to real companies.
+
+### Left out, deliberately
+
+- Real push notifications (needs a push service and subscriptions). The app fires local notifications for new alerts when opened, and installs to the home screen.
+- BSE as a second filings source, and intraday data. EOD is what the brief asked for.
+- Embeddings. BM25 over page-tagged chunks is enough to pick the ~10 forward-looking passages from a transcript, and needs no extra model or index.
+- Accounts, multi-user state, and editing the portfolio in the app.
+
+### Next
+
+1. A server-side scheduler (after market close) that refreshes, diffs against the last run and sends Web Push.
+2. "Since you last looked" as the default window, from the cleared queue.
+3. Scorecard history: a management credibility score per company across years, not just the last four calls.
+4. Contingent liabilities, related-party transactions and auditor remarks pulled from annual-report notes into the bear case.
+5. An evaluation set: ~50 real results filings with hand-checked numbers, to measure the parser and model fallback.
+
+## Layout
+
+```
+config/portfolio.json   holdings, research demo set, default thresholds
+finn/sources/           prices, nse, screener, documents (PDF text, chunking, BM25, quote check)
+finn/push/              classify, score, enrich, alerts, digest
+finn/pull/              metrics, extract, reconcile, dossier (+ grounded ask)
+finn/llm.py             model router, cache, cost ledger
+finn/server.py          Flask: app, data, /api/research, /api/ask, /api/refresh
+web/                    the app (index.html, styles.css, js/)
+tests/                  rules, results parser, grounding contract, end-to-end dossier with mocks
+```

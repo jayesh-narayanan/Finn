@@ -1,0 +1,10 @@
+{
+  "name": "FINN",
+  "short_name": "FINN",
+  "description": "What changed in your portfolio, and what matters.",
+  "start_url": "./#brief",
+  "display": "standalone",
+  "background_color": "#edf0f3",
+  "theme_color": "#15213b",
+  "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}]
+}
