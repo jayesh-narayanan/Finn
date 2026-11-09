@@ -156,6 +156,15 @@ def model_for(tier: str) -> str:
     return _resolved.get(tier) or _cfg(tier)[2]
 
 
+def reply_text(choice: dict) -> str:
+    """Message text from an OpenAI-style choice; tolerates missing content and list-of-parts content."""
+    msg = choice.get("message") or {}
+    c = msg.get("content")
+    if isinstance(c, list):
+        c = "".join(p.get("text", "") if isinstance(p, dict) else str(p) for p in c)
+    return (c or "").strip()
+
+
 def complete(tier: str, system: str, user: str, *, as_json: bool = True,
              max_tokens: int = 2000, temperature: float = 0.1):
     if not available():
@@ -172,9 +181,15 @@ def complete(tier: str, system: str, user: str, *, as_json: bool = True,
     headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
     last = None
     resolved_once = False
+    # Thinking models spend part of max_tokens reasoning before they answer. Give them headroom
+    # (billing is for tokens used, not the cap) and ask Gemini to keep the reasoning short.
+    budget = max_tokens + 2048
+    effort = env("FINN_REASONING_EFFORT", "low" if "generativelanguage" in base else "")
     for attempt in range(5):
-        body = {"model": model, "temperature": temperature, "max_tokens": max_tokens,
+        body = {"model": model, "temperature": temperature, "max_tokens": budget,
                 "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
+        if effort:
+            body["reasoning_effort"] = effort
         if as_json:
             body["response_format"] = {"type": "json_object"}
         try:
@@ -189,6 +204,10 @@ def complete(tier: str, system: str, user: str, *, as_json: bool = True,
             model = _resolve(tier, model, _err_text(r))
             k = cache.key(model, system, user, as_json, max_tokens)
             continue
+        if r.status_code == 400 and effort and re.search(r"reasoning|thinking", _err_text(r), re.I):
+            log.info("%s doesn't accept reasoning_effort=%s; sending without it", model, effort)
+            effort = ""
+            continue
         if r.status_code in (400, 401, 403, 404):
             msg = _err_text(r)
             hint = " Check FINN_LLM_API_KEY in .env." if re.search(r"key|auth|permission", msg, re.I) else ""
@@ -199,9 +218,17 @@ def complete(tier: str, system: str, user: str, *, as_json: bool = True,
             continue
         try:
             data = r.json()
-            text = data["choices"][0]["message"]["content"] or ""
+            choice = (data.get("choices") or [{}])[0]
+            text = reply_text(choice)
+            if not text:
+                finish = choice.get("finish_reason")
+                if finish in ("length", "max_tokens") and budget < 16000:
+                    budget *= 2  # all of it went on thinking: allow more and ask again
+                    last = RuntimeError(f"empty reply from {model}: hit the token limit while thinking")
+                    continue
+                raise ValueError(f"empty reply from {model} (finish_reason={finish})")
             out = parse_json(text) if as_json else text
-        except (ValueError, KeyError, IndexError, TypeError) as e:
+        except (ValueError, KeyError, IndexError, TypeError, AttributeError) as e:
             last = e
             time.sleep(2)
             continue

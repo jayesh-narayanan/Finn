@@ -99,8 +99,8 @@ def run() -> int:
     def model():
         if not llm.available():
             raise RuntimeError("no FINN_LLM_API_KEY in .env (optional: rules, prices and metrics work without it)")
-        out = llm.complete("fast", 'Reply with JSON {"ok": true}.', "ping", max_tokens=20)
-        smart = llm.complete("smart", 'Reply with JSON {"ok": true}.', "ping", max_tokens=20)
+        out = llm.complete("fast", 'Reply with JSON {"ok": true}.', "ping", max_tokens=50)
+        smart = llm.complete("smart", 'Reply with JSON {"ok": true}.', "ping", max_tokens=50)
         return f"fast={llm.model_for('fast')} {out}, smart={llm.model_for('smart')} {smart}"
     res["model"] = _check("Language model", model)
     if not res["model"] and llm.available():

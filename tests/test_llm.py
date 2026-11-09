@@ -84,3 +84,33 @@ def test_pick_model_on_the_list_your_key_returned():
            "gemini-3.1-flash-image, gemini-3.1-flash-lite-image, gemini-3.5-flash, gemini-3.5-flash-lite").split(", ")
     assert llm.pick_model("fast", ids) == "gemini-3.5-flash-lite"
     assert llm.pick_model("smart", ids) == "gemini-3.5-flash"
+
+
+def test_thinking_model_that_runs_out_of_tokens_gets_more(monkeypatch, api):
+    budgets = []
+
+    def post(url, json=None, headers=None, timeout=None):
+        budgets.append(json["max_tokens"])
+        assert json.get("reasoning_effort") == "low"
+        if len(budgets) == 1:  # Gemini's shape when all tokens went on thinking: no content key at all
+            return R(200, {"choices": [{"message": {"role": "assistant"}, "finish_reason": "length"}]})
+        return R(200, {"choices": [{"message": {"content": [{"type": "text", "text": '{"ok": true}'}]}}]})
+    monkeypatch.setenv("FINN_LLM_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai/")
+    monkeypatch.setenv("FINN_FAST_MODEL", "gemini-3.0-flash-lite")
+    monkeypatch.setattr(llm.requests, "post", post)
+    assert llm.complete("fast", "sys", "think hard", max_tokens=20) == {"ok": True}
+    assert budgets[1] == budgets[0] * 2
+
+
+def test_provider_without_reasoning_effort_is_retried_without_it(monkeypatch, api):
+    sent = []
+
+    def post(url, json=None, headers=None, timeout=None):
+        sent.append("reasoning_effort" in json)
+        if "reasoning_effort" in json:
+            return R(400, {"error": {"message": "Unknown parameter: reasoning_effort"}})
+        return R(200, {"choices": [{"message": {"content": '{"ok": true}'}}]})
+    monkeypatch.setenv("FINN_LLM_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai/")
+    monkeypatch.setenv("FINN_FAST_MODEL", "gemini-3.0-flash-lite")
+    monkeypatch.setattr(llm.requests, "post", post)
+    assert llm.complete("fast", "sys", "y") == {"ok": True} and sent == [True, False]
