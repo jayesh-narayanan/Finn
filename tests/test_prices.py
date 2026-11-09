@@ -98,6 +98,7 @@ def test_partial_source_only_fills_gaps(monkeypatch):
     monkeypatch.setattr(prices, "SOURCES", [("first", first), ("second", second)])
     out, notes = prices.eod_many(["A", "B"])
     assert calls == [("first", ["A", "B"]), ("second", ["B"])] and notes == []
+    assert out["A"]["src"] == "first" and out["B"]["src"] == "second"
 
 
 def test_no_alarm_when_a_fallback_covers_everything(monkeypatch):
@@ -108,7 +109,6 @@ def test_no_alarm_when_a_fallback_covers_everything(monkeypatch):
     monkeypatch.setattr(prices, "SOURCES", [("yahoo", blocked), ("nse-bhavcopy", lambda syms: {s: ser for s in syms})])
     out, notes = prices.eod_many(["A", "B"])
     assert len(out) == 2 and notes == []
-    assert out["A"]["src"] == "first" and out["B"]["src"] == "second"
 
 
 class FakeResp:
