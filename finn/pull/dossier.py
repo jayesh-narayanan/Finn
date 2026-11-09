@@ -81,7 +81,7 @@ def build(symbol: str, progress: Callable[[str, int], None] = lambda s, p: None,
                 if ar_chunks and llm.available():
                     top = documents.BM25(ar_chunks).search(SNAPSHOT_Q, k=8)
                     ex = "\n\n".join(f"[p{c['page']}] {c['text']}" for c in top)
-                    snap = llm.complete("fast", SNAPSHOT_SYS, ex, max_tokens=900)
+                    snap = llm.obj(llm.complete("fast", SNAPSHOT_SYS, ex, max_tokens=900))
                     snapshot = {**snap, "source": "A1"}
             except Exception as e:  # noqa: BLE001
                 log.warning("annual report: model step failed: %s", e)
@@ -149,7 +149,8 @@ def ask(symbol: str, question: str) -> dict:
                            max_tokens=700)
         cost = led.as_dict()
     valid = {(c["src"], c["page"]) for c in top}
-    cites = [c for c in out.get("cites", []) if (c.get("src"), c.get("page")) in valid or
+    out = llm.obj(out)
+    cites = [c for c in out.get("cites", []) if isinstance(c, dict) if (c.get("src"), c.get("page")) in valid or
              str(c.get("src", "")).startswith("SCR")]
     srcs = {s["id"]: s for s in d["sources"]}
     for c in cites:

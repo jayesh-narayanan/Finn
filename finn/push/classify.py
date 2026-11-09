@@ -114,9 +114,12 @@ def _llm_batch(items: list[dict], batch: int = 25) -> None:
         chunk = items[start:start + batch]
         lines = "\n".join(f"{i}. [{x['subject']}] {x.get('text', '')[:300]}" for i, x in enumerate(chunk))
         try:
-            out = llm.complete("fast", sys_, lines, max_tokens=800)
+            out = llm.obj(llm.complete("fast", sys_, lines, max_tokens=800), "labels")
             for lab in out.get("labels", []):
-                i, cat = int(lab["i"]), lab.get("category")
+                i, cat = llm.num(lab.get("i")), lab.get("category")
+                if i is None:
+                    continue
+                i = int(i)
                 if 0 <= i < len(chunk) and cat in CATEGORIES:
                     chunk[i].update(category=cat, subtype="llm", cls_conf=0.6, cls_by="llm")
         except Exception as e:  # noqa: BLE001

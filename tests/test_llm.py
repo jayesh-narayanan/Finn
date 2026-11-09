@@ -114,3 +114,24 @@ def test_provider_without_reasoning_effort_is_retried_without_it(monkeypatch, ap
     monkeypatch.setenv("FINN_FAST_MODEL", "gemini-3.0-flash-lite")
     monkeypatch.setattr(llm.requests, "post", post)
     assert llm.complete("fast", "sys", "y") == {"ok": True} and sent == [True, False]
+
+
+def test_num_and_obj_normalise_model_output():
+    assert llm.num("362,268") == 362268.0 and llm.num("44,941.71") == 44941.71
+    assert llm.num("(1,234.5)") == -1234.5 and llm.num(12) == 12.0
+    assert llm.num("533-402") is None and llm.num(None) is None and llm.num(True) is None
+    assert llm.obj([{"person": "A"}], "changes") == {"changes": [{"person": "A"}]}
+    assert llm.obj([{"basis": "consolidated"}]) == {"basis": "consolidated"}
+    assert llm.obj("nonsense") == {}
+
+
+def test_results_fallback_accepts_model_numbers_as_strings(monkeypatch):
+    from finn.push import enrich
+    page = "Revenue from operations 3,62,268 3,40,100 3,10,500\nProfit before tax 60,878 55,000 50,100\nNet profit 44,941.71 41,000 37,500"
+    monkeypatch.setattr(llm, "complete", lambda *a, **k: [{  # a bare list, numbers as strings: both seen live
+        "unit": "crore", "periods": ["Q2 FY27", "Q1 FY27", "Q2 FY26"], "basis": "consolidated",
+        "revenue": ["362,268", "340,100", "310,500"], "pbt": ["60,878", "55,000", "50,100"],
+        "pat": ["44,941.71", "41,000", "37,500"], "finance_costs": ["533-402", 1, 2]}])
+    got = enrich._llm_results(page)
+    assert got["values"]["revenue"][0] == 362268.0 and got["values"]["pat"][0] == 44941.71
+    assert "finance_costs" not in got["values"]

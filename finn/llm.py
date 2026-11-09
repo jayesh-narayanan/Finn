@@ -156,6 +156,33 @@ def model_for(tier: str) -> str:
     return _resolved.get(tier) or _cfg(tier)[2]
 
 
+def obj(out, key: str | None = None) -> dict:
+    """Models sometimes answer a JSON object request with a bare list. Normalise to the object shape:
+    a list becomes {key: list} when the caller names the list field, else its first object."""
+    if isinstance(out, dict):
+        return out
+    if isinstance(out, list):
+        if key:
+            return {key: [x for x in out if isinstance(x, dict)]}
+        return next((x for x in out if isinstance(x, dict)), {})
+    return {}
+
+
+def num(x) -> float | None:
+    """A number from model output: 362268, "362,268", "(1,234.5)" -> -1234.5; garbage like "533-402" -> None."""
+    if isinstance(x, (int, float)) and not isinstance(x, bool):
+        return float(x)
+    if not isinstance(x, str):
+        return None
+    t = x.strip().replace(",", "").replace("₹", "").replace(" ", "")
+    neg = t.startswith("(") and t.endswith(")")
+    t = t.strip("()")
+    if not re.fullmatch(r"-?\d+(?:\.\d+)?", t):
+        return None
+    v = float(t)
+    return -v if neg else v
+
+
 def reply_text(choice: dict) -> str:
     """Message text from an OpenAI-style choice; tolerates missing content and list-of-parts content."""
     msg = choice.get("message") or {}

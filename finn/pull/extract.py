@@ -60,11 +60,11 @@ def extract_transcript(url: str, source_id: str, quarter: str) -> dict:
     top = documents.BM25(ch).search(GUIDANCE_QUERY, k=10)
     top.sort(key=lambda c: (c["page"]))
     excerpt = "\n\n".join(f"[p{c['page']}] {c['text']}" for c in top)
-    out = llm.complete("fast", SYSTEM, f"Quarter: {quarter}\n\n{excerpt}", max_tokens=1800)
+    out = llm.obj(llm.complete("fast", SYSTEM, f"Quarter: {quarter}\n\n{excerpt}", max_tokens=1800), "guidance")
     kept, dropped = {}, 0
     for kind in ("guidance", "claims", "pushback"):
         kept[kind] = []
-        for i, it in enumerate(out.get(kind, []) or []):
+        for i, it in enumerate(x for x in (out.get(kind) or []) if isinstance(x, dict)):
             page = documents.quote_in(it.get("quote", ""), pages)
             if page is None:
                 dropped += 1

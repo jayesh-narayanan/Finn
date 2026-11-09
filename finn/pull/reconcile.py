@@ -50,7 +50,7 @@ def run(extracts: list[dict], m: dict) -> dict:
         ev_ids.add(f"M{i}")
     user = ("MANAGEMENT SAID:\n" + "\n".join(said) + "\n\nREPORTED NUMBERS:\n" + actuals +
             "\n\nOBSERVATIONS:\n" + "\n".join(obs))
-    out = llm.complete("smart", SYSTEM, user, max_tokens=3000, temperature=0.2)
+    out = llm.obj(llm.complete("smart", SYSTEM, user, max_tokens=3000, temperature=0.2))
     return validate(out, ev_ids)
 
 
@@ -59,7 +59,7 @@ def validate(out: dict, ev_ids: set[str]) -> dict:
     clean = {}
     for k in ("scorecard", "narrative_gaps", "bull", "bear"):
         keep = []
-        for it in out.get(k, []) or []:
+        for it in (x for x in (out.get(k) or []) if isinstance(x, dict)):
             ev = [e for e in (it.get("evidence") or []) if e in ev_ids]
             if not ev or (k == "scorecard" and not any("-G" in e or "-C" in e for e in ev)):
                 dropped += 1

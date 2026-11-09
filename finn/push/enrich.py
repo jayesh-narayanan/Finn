@@ -120,7 +120,7 @@ def _llm_results(text: str) -> dict | None:
             '"revenue":[3 numbers],"other_income":[3],"finance_costs":[3],"depreciation":[3],"pbt":[3],"pat":[3]} '
             "Use null for anything not present.")
     try:
-        out = llm.complete("fast", sys_, text[:9000], max_tokens=600)
+        out = llm.obj(llm.complete("fast", sys_, text[:9000], max_tokens=600))
     except Exception as e:  # noqa: BLE001
         log.warning("LLM results extraction failed: %s", e)
         return None
@@ -128,11 +128,14 @@ def _llm_results(text: str) -> dict | None:
     vals = {}
     for k in LABELS:
         arr = out.get(k)
-        if not isinstance(arr, list) or len(arr) < 3 or any(x is None for x in arr[:3]):
+        if not isinstance(arr, list) or len(arr) < 3:
+            continue
+        arr = [llm.num(x) for x in arr[:3]]  # "362,268" -> 362268.0; garbage -> None
+        if any(x is None for x in arr):
             continue
         # every number must literally appear in the filing (grouping commas ignored)
-        if all(_appears(float(x), flat) for x in arr[:3]):
-            vals[k] = [float(x) for x in arr[:3]]
+        if all(_appears(x, flat) for x in arr):
+            vals[k] = arr
     if not all(k in vals for k in ("revenue", "pbt", "pat")):
         return None
     div = {"lakh": 100.0, "million": 10.0}.get(out.get("unit", "crore"), 1.0)
@@ -246,8 +249,8 @@ def mgmt_card(item: dict) -> dict | None:
                 '{"changes":[{"person":"","role":"","change":"appointed|resigned|retired|redesignated|ceased",'
                 '"effective":"","reason":"","bio":"","previous":["Company — role"]}]}')
         try:
-            out = llm.complete("fast", sys_, text[:9000], max_tokens=700)
-            ch = [c for c in out.get("changes", []) if c.get("person")]
+            out = llm.obj(llm.complete("fast", sys_, text[:9000], max_tokens=700), "changes")
+            ch = [c for c in out.get("changes", []) if isinstance(c, dict) and c.get("person")]
             if ch:
                 card = {"type": "mgmt", "changes": ch, "bio_source": "filing"}
         except Exception as e:  # noqa: BLE001
@@ -337,7 +340,7 @@ def one_liners(items: list[dict], limit: int = 30) -> None:
             out = llm.complete("fast", "For each filing write ONE plain-English line (max 22 words) saying what "
                                "actually happened, with the key number if any. No hype. "
                                'JSON {"lines":[{"i":0,"line":""}]}', "\n\n".join(blocks), max_tokens=900)
-            for row in out.get("lines", []):
+            for row in llm.obj(out, "lines").get("lines", []):
                 i = int(row.get("i", -1))
                 if 0 <= i < len(batch) and row.get("line"):
                     batch[i]["summary"] = row["line"].strip()
