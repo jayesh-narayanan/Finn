@@ -51,11 +51,15 @@ def build(symbol: str, progress: Callable[[str, int], None] = lambda s, p: None,
             try:
                 pages = documents.fetch_pages(c["transcript"])
                 all_chunks += documents.chunks(pages, sid)
-                if llm.available():
-                    extracts.append(extract.extract_transcript(c["transcript"], sid, q))
             except Exception as e:  # noqa: BLE001
-                log.warning("transcript %s failed: %s", c["transcript"], e)
+                log.warning("transcript %s: couldn't download or read: %s", c["transcript"], e)
                 sources[-1]["error"] = str(e)[:120]
+                continue
+            if llm.available():
+                try:
+                    extracts.append(extract.extract_transcript(c["transcript"], sid, q))
+                except Exception as e:  # noqa: BLE001
+                    log.warning("transcript %s: model step failed: %s", sid, e)
 
         snapshot = {"what_it_does": scr.get("about", ""), "segments": [], "source": "SCR-TOP"}
         ars = sorted([a for a in scr["docs"]["annual_reports"] if a.get("url")],
@@ -65,18 +69,22 @@ def build(symbol: str, progress: Callable[[str, int], None] = lambda s, p: None,
             sources.append({"id": "A1", "type": "annual_report", "label": f"Annual report {ar.get('year') or ''}".strip(),
                             "url": ar["url"]})
             progress("Scanning the annual report", 75)
+            ar_chunks = []
             try:
                 pages = documents.fetch_pages(ar["url"])
                 ar_chunks = documents.chunks(pages, "A1")
                 all_chunks += ar_chunks
-                if llm.available():
+            except Exception as e:  # noqa: BLE001
+                log.warning("annual report: couldn't download or read: %s", e)
+                sources[-1]["error"] = str(e)[:120]
+            try:
+                if ar_chunks and llm.available():
                     top = documents.BM25(ar_chunks).search(SNAPSHOT_Q, k=8)
                     ex = "\n\n".join(f"[p{c['page']}] {c['text']}" for c in top)
                     snap = llm.complete("fast", SNAPSHOT_SYS, ex, max_tokens=900)
                     snapshot = {**snap, "source": "A1"}
             except Exception as e:  # noqa: BLE001
-                log.warning("annual report failed: %s", e)
-                sources[-1]["error"] = str(e)[:120]
+                log.warning("annual report: model step failed: %s", e)
 
         analysis = None
         if llm.available() and any(ex.get("guidance") or ex.get("claims") for ex in extracts):

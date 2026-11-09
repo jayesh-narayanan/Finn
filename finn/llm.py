@@ -85,11 +85,78 @@ def parse_json(text: str):
         raise
 
 
+class LLMConfigError(RuntimeError):
+    """Wrong key, model or URL. Retrying won't help, so fail at once with a clear message."""
+
+
+_resolved: dict[str, str] = {}  # tier -> model actually used, when the configured one isn't served
+
+
+def _err_text(r) -> str:
+    try:
+        e = r.json()
+        e = e[0] if isinstance(e, list) else e
+        return str((e.get("error") or {}).get("message") or e)[:300]
+    except Exception:  # noqa: BLE001
+        return r.text[:300]
+
+
+def list_models() -> list[str]:
+    base, key, _, _ = _cfg("fast")
+    r = requests.get(f"{base}/models", headers={"Authorization": f"Bearer {key}"}, timeout=30)
+    if r.status_code != 200:
+        raise LLMConfigError(f"Couldn't list models at {base} (HTTP {r.status_code}): {_err_text(r)}")
+    data = r.json().get("data", [])
+    return [m["id"].removeprefix("models/") for m in data if m.get("id")]
+
+
+_SKIP = re.compile(r"embed|tts|audio|image|vision|live|realtime|transcri|aqa|imagen|veo|learnlm|gemma|guard|whisper|moderation")
+
+
+def _version(mid: str) -> tuple:
+    return tuple(float(x) for x in re.findall(r"\d+(?:\.\d+)?", mid)[:2]) or (0,)
+
+
+def pick_model(tier: str, ids: list[str]) -> str | None:
+    """Best available chat model for a tier: newest stable 'flash-lite' for fast, newest stable 'flash' for smart."""
+    chat = [m for m in ids if not _SKIP.search(m.lower())]
+
+    def best(cands):
+        stable = [m for m in cands if not re.search(r"preview|exp|latest|\d{2}-\d{2}|\d{3,4}$", m)]
+        pool = stable or cands
+        return max(pool, key=lambda m: (_version(m), -len(m))) if pool else None
+
+    lite = [m for m in chat if "flash-lite" in m or "flash-8b" in m]
+    flash = [m for m in chat if "flash" in m and m not in lite]
+    if tier == "fast":
+        return best(lite) or best(flash) or best(chat)
+    return best(flash) or best([m for m in chat if "pro" in m]) or best(chat)
+
+
+def _resolve(tier: str, configured: str, why: str) -> str:
+    ids = list_models()
+    if configured in ids:
+        raise LLMConfigError(f"Model {configured} is listed but the call failed: {why}")
+    m = pick_model(tier, ids)
+    if not m:
+        raise LLMConfigError(f"Model {configured} isn't available and no chat model was found. Available: {', '.join(ids[:20])}")
+    env_name = "FINN_FAST_MODEL" if tier == "fast" else "FINN_SMART_MODEL"
+    log.warning("Model %s isn't available on this API (%s). Using %s instead; set %s=%s in .env to make this permanent.",
+                configured, why[:120], m, env_name, m)
+    _resolved[tier] = m
+    return m
+
+
+def model_for(tier: str) -> str:
+    return _resolved.get(tier) or _cfg(tier)[2]
+
+
 def complete(tier: str, system: str, user: str, *, as_json: bool = True,
              max_tokens: int = 2000, temperature: float = 0.1):
     if not available():
         raise LLMUnavailable("Set FINN_LLM_API_KEY (see .env.example)")
-    base, key, model, (pin, pout) = _cfg(tier)
+    base, key, _, (pin, pout) = _cfg(tier)
+    model = model_for(tier)
     k = cache.key(model, system, user, as_json, max_tokens)
     led = _led()
     hit = cache.get("llm", k)
@@ -97,35 +164,50 @@ def complete(tier: str, system: str, user: str, *, as_json: bool = True,
         if led:
             led.cached += 1
         return parse_json(hit) if as_json else hit
-    body = {"model": model, "temperature": temperature, "max_tokens": max_tokens,
-            "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
-    if as_json:
-        body["response_format"] = {"type": "json_object"}
     headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
     last = None
-    for attempt in range(4):
+    resolved_once = False
+    for attempt in range(5):
+        body = {"model": model, "temperature": temperature, "max_tokens": max_tokens,
+                "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
+        if as_json:
+            body["response_format"] = {"type": "json_object"}
         try:
-            r = requests.post(f"{base}/chat/completions", json=body, headers=headers, timeout=120)
-            if r.status_code == 429 or r.status_code >= 500:  # free tiers rate-limit: back off
-                last = RuntimeError(f"{r.status_code}: {r.text[:200]}")
-                time.sleep(4 * (attempt + 1))
-                continue
-            r.raise_for_status()
+            r = requests.post(f"{base}/chat/completions", json=body, headers=headers, timeout=(15, 90))
+        except requests.RequestException as e:
+            last = e
+            time.sleep(3 * (attempt + 1))
+            continue
+        if r.status_code == 404 and not resolved_once:  # model retired or renamed: find the current one
+            resolved_once = True
+            model = _resolve(tier, model, _err_text(r))
+            k = cache.key(model, system, user, as_json, max_tokens)
+            continue
+        if r.status_code in (400, 401, 403, 404):
+            msg = _err_text(r)
+            hint = " Check FINN_LLM_API_KEY in .env." if re.search(r"key|auth|permission", msg, re.I) else ""
+            raise LLMConfigError(f"{r.status_code} from {model}: {msg}{hint}")
+        if r.status_code == 429 or r.status_code >= 500:  # free tiers rate-limit: back off
+            last = RuntimeError(f"{r.status_code}: {_err_text(r)}")
+            time.sleep(min(30, 5 * (attempt + 1)))
+            continue
+        try:
             data = r.json()
             text = data["choices"][0]["message"]["content"] or ""
-            usage = data.get("usage") or {}
-            tin = usage.get("prompt_tokens") or len(system + user) // 4
-            tout = usage.get("completion_tokens") or len(text) // 4
-            if led:
-                led.calls += 1
-                led.tin += tin
-                led.tout += tout
-                led.usd += tin / 1e6 * pin + tout / 1e6 * pout
-                led.by_tier[tier] = led.by_tier.get(tier, 0) + 1
             out = parse_json(text) if as_json else text
-            cache.put("llm", k, text)
-            return out
-        except (requests.RequestException, json.JSONDecodeError, KeyError) as e:
+        except (ValueError, KeyError, IndexError, TypeError) as e:
             last = e
-            time.sleep(2 * (attempt + 1))
-    raise RuntimeError(f"LLM call failed: {last}")
+            time.sleep(2)
+            continue
+        usage = data.get("usage") or {}
+        tin = usage.get("prompt_tokens") or len(system + user) // 4
+        tout = usage.get("completion_tokens") or len(text) // 4
+        if led:
+            led.calls += 1
+            led.tin += tin
+            led.tout += tout
+            led.usd += tin / 1e6 * pin + tout / 1e6 * pout
+            led.by_tier[tier] = led.by_tier.get(tier, 0) + 1
+        cache.put("llm", k, text)
+        return out
+    raise RuntimeError(f"LLM call failed after retries: {last}")

@@ -66,16 +66,40 @@ def _retry_after(r) -> float:
         return 5.0
 
 
+def _browser():
+    try:
+        from curl_cffi import requests as creq
+        return creq.Session(impersonate="chrome")
+    except ImportError:
+        return None
+
+
 def download(url: str, headers: dict | None = None, sess: requests.Session | None = None) -> Path:
-    """Download a binary (PDF) once; later calls return the cached file."""
-    ext = Path(url.split("?")[0]).suffix.lower() or ".bin"
+    """Download a binary (PDF) once; later calls return the cached file.
+
+    Plain requests first (fast); if the site stalls, refuses or serves an HTML block page, retry once
+    through curl_cffi's browser impersonation. BSE and some company sites do this to scripts.
+    """
+    ext = Path(url.split("?")[0]).suffix.lower()
+    ext = ext if ext in (".pdf", ".zip", ".csv") else ".pdf"
     path = DOCS / (hashlib.sha1(url.encode()).hexdigest() + ext)
     if path.exists() and path.stat().st_size > 0:
         return path
-    s = sess or _S
-    h = {"Referer": "https://www.nseindia.com/" if "nse" in url else "https://www.bseindia.com/"}
+    h = {"Referer": "https://www.nseindia.com/" if "nse" in url else "https://www.bseindia.com/",
+         "Accept": "application/pdf,*/*"}
     h.update(headers or {})
-    r = s.get(url, headers=h, timeout=90)
-    r.raise_for_status()
-    path.write_bytes(r.content)
-    return path
+    errors = []
+    for name, s in (("requests", sess or _S), ("browser", _browser())):
+        if s is None:
+            continue
+        try:
+            r = s.get(url, headers=h, timeout=(15, 60) if name == "requests" else 75)
+            body = r.content or b""
+            if r.status_code == 200 and body and (b"%PDF" in body[:1024] or ext != ".pdf"):
+                path.write_bytes(body)
+                return path
+            errors.append(f"{name}: HTTP {r.status_code}" + ("" if r.status_code != 200 else " (not a PDF)"))
+        except Exception as e:  # noqa: BLE001
+            errors.append(f"{name}: {type(e).__name__}")
+            log.warning("download %s via %s failed: %s", url, name, e)
+    raise RuntimeError(f"Couldn't download {url} ({'; '.join(errors)})")

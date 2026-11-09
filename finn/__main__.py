@@ -35,6 +35,8 @@ def main():
     sub.add_parser("build-static")
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname).1s %(name)s: %(message)s")
+    for noisy in ("pypdf", "pdfminer", "werkzeug"):
+        logging.getLogger(noisy).setLevel(logging.ERROR if noisy != "werkzeug" else logging.WARNING)
 
     if a.cmd == "doctor":
         from . import doctor

@@ -100,8 +100,15 @@ def run() -> int:
         if not llm.available():
             raise RuntimeError("no FINN_LLM_API_KEY in .env (optional: rules, prices and metrics work without it)")
         out = llm.complete("fast", 'Reply with JSON {"ok": true}.', "ping", max_tokens=20)
-        return f"{llm._cfg('fast')[2]} replied {out}"
+        smart = llm.complete("smart", 'Reply with JSON {"ok": true}.', "ping", max_tokens=20)
+        return f"fast={llm.model_for('fast')} {out}, smart={llm.model_for('smart')} {smart}"
     res["model"] = _check("Language model", model)
+    if not res["model"] and llm.available():
+        try:
+            ids = llm.list_models()
+            print(f"        models this key can use: {', '.join(ids[:25])}")
+        except Exception as e:  # noqa: BLE001
+            print(f"        couldn't list models either: {str(e)[:200]}")
 
     print()
     if not (res["yfinance"] or res["yahoo"] or res["bhav"]):
