@@ -17,11 +17,16 @@ export function render(root, rerender, sym) {
   const sorted = [...H].sort(sortBy === "move" ? (a, b) => Math.abs(b.chg_pct) - Math.abs(a.chg_pct)
     : sortBy === "volume" ? (a, b) => b.vol_x - a.vol_x : (a, b) => a.name.localeCompare(b.name));
   const asof = H[0]?.asof;
+  const unpriced = S.feed.holdings.filter((x) => x.close == null);
 
   mount(root, 
     h("header", { class: "top" }, h("span", { class: "brand" }, "Holdings"), h("span", { class: "spacer" }),
       h("span", { class: "date" }, asof ? `${fmt.day(asof)} close` : "")),
-    h("p", { class: "muted small", style: { margin: "2px 0 0" } }, `${up} up, ${H.length - up} down across ${H.length} holdings.`),
+    h("p", { class: "muted small", style: { margin: "2px 0 0" } }, H.length
+      ? `${up} up, ${H.length - up} down across ${H.length} holdings.`
+      : "No prices in the last refresh. Run python -m finn doctor to see which price source works on your network."),
+    unpriced.length && H.length ? h("p", { class: "small down", style: { margin: "4px 0 0" } },
+      `No prices for ${unpriced.map((x) => x.name).join(", ")}.`) : null,
     h("div", { class: "heat", role: "list", "aria-label": "Day move by holding" }, [...H].sort((a, b) => b.chg_pct - a.chg_pct).map((x) =>
       h("button", {
         role: "listitem", title: `${x.name} ${fmt.pct(x.chg_pct)}`, "aria-label": `${x.name} ${fmt.pct(x.chg_pct)}`,

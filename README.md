@@ -9,23 +9,54 @@ The third screen, **Watch**, is where the investor defines "unusual" (price move
 
 ## Run it
 
+Set up once (Python 3.10+):
+
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-python -m finn sample          # fictional demo data, no network or key needed
-python -m finn serve           # http://localhost:8000 — open on your phone via your LAN IP
 ```
 
-Live data:
+Try it on fictional sample data, with no network or key needed. The second command starts the app at http://localhost:8000; open it on your phone at your computer's LAN address.
 
 ```bash
-cp .env.example .env           # add a free Gemini (or Groq/OpenRouter/Ollama) key
-python -m finn refresh         # prices + NSE filings + enrichment -> data/feed.json
-python -m finn research --demo # dossiers for config research_demo
-python -m finn research HAL    # any NSE symbol screener.in covers
+python -m finn sample
+python -m finn serve
+```
+
+For live data, first check which data sources your network can reach:
+
+```bash
+python -m finn doctor
+```
+
+Then add a model key and refresh. `.env.example` explains the free options (Gemini, Groq, or a local Ollama). Open `.env` in any editor and paste your key after `FINN_LLM_API_KEY=`.
+
+```bash
+cp .env.example .env
+python -m finn refresh
+python -m finn research --demo
+python -m finn research HAL
+python -m finn serve
+```
+
+Run the tests (they use a throwaway data folder):
+
+```bash
 python -m pytest -q
 ```
 
 Edit the portfolio in `config/portfolio.json`. Without a model key everything still runs: classification, scoring, alerts and all the financial analysis are deterministic; only one-liners, management bios, guidance extraction and the promises scorecard need a model.
+
+### Where prices come from
+
+Yahoo rate-limits scripts (HTTP 429), so FINN tries three sources and uses the first that works, per symbol:
+
+1. **yfinance** (needs `curl_cffi`, which makes requests look like a real browser to Yahoo), one batch for the whole portfolio.
+2. **Yahoo's chart endpoint**, directly.
+3. **NSE's daily bhavcopy archive.** One file per trading day covers every listed stock, so it doesn't depend on Yahoo at all. The first refresh downloads ~125 files (a minute or two). Each day is cached for good, so later refreshes only fetch new days. Set `FINN_PRICE_SESSIONS=60` in `.env` to halve the first download.
+
+If a source fails, the refresh carries on and the app shows an "Incomplete refresh" note that says what's missing. NSE's filings API is treated the same way: after three blocked requests, FINN stops trying for that run instead of spending minutes on retries.
 
 ### Deploy
 
@@ -34,18 +65,27 @@ Edit the portfolio in `config/portfolio.json`. Without a model key everything st
 
 ## How it works
 
+Push (`python -m finn refresh` writes `data/feed.json`):
+
 ```
-                 ┌────────── push ──────────┐            ┌─────────────── pull ───────────────┐
- Yahoo chart ──▶ prices ─┐                  │  screener ─▶ statements ─▶ metrics.py (no model) │
- NSE API  ─────▶ filings ─▶ classify (rules) │            └▶ last 4 transcripts ─▶ BM25 top-10   │
-                          ▶ score (rules)   │                 chunks ─▶ fast model ─▶ quotes    │
-                          ▶ enrich ─────────┤                 verified against PDF text         │
-                            results: parse PDF, model only if parsing fails, numbers verified    │
-                            mgmt: profile from the filing (+ optional web search)               │
-                            others: exchange text, or one batched fast-model line                │
-                          ▶ data/feed.json  │            ─▶ smart model, ONE call: scorecard,   │
-                                            │               story vs numbers, bull/bear         │
- app (vanilla JS) ◀── evaluates your alert rules on the device; ── citations validated ─▶ data/research/SYM.json
+prices    yfinance -> Yahoo chart -> NSE bhavcopy   first that works, per symbol
+filings   NSE announcements API
+            -> classify    ordered rules; model only for leftovers, batched
+            -> score       category + content + deal size vs market cap + price reaction
+            -> enrich      results: parse the filing's table; model fallback, numbers verified
+                           mgmt: profile from the filing (+ optional web search)
+                           others: exchange text, or one batched one-line summary
+app       evaluates your alert rules on the device
+```
+
+Pull (`python -m finn research SYM` writes `data/research/SYM.json`):
+
+```
+screener.in tables  -> metrics.py         arithmetic only, no model
+last 4 transcripts  -> BM25 top 10 chunks -> fast model -> quotes checked against PDF text
+latest annual report -> BM25 top 8 chunks -> fast model -> business snapshot
+all of the above    -> smart model, ONE call -> scorecard, story vs numbers, bull/bear
+                    -> every line must cite evidence ids that exist, or it is dropped
 ```
 
 ### Decisions and trade-offs

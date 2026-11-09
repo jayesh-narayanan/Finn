@@ -1,5 +1,6 @@
 """FINN command line.
 
+  python -m finn doctor                 # check which data sources work on this network
   python -m finn sample                 # fictional demo data, no network needed
   python -m finn refresh [--days 30]    # live: prices + NSE filings + enrichment -> data/feed.json
   python -m finn research PIDILITIND    # live: dossier -> data/research/PIDILITIND.json
@@ -21,6 +22,7 @@ def main():
     ap = argparse.ArgumentParser(prog="finn")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("sample")
+    sub.add_parser("doctor")
     r = sub.add_parser("refresh")
     r.add_argument("--days", type=int, default=30)
     r.add_argument("--no-enrich", action="store_true")
@@ -34,6 +36,9 @@ def main():
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname).1s %(name)s: %(message)s")
 
+    if a.cmd == "doctor":
+        from . import doctor
+        raise SystemExit(doctor.run())
     if a.cmd == "sample":
         from . import sample
         sample.write()

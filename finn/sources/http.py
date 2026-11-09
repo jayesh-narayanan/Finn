@@ -28,6 +28,10 @@ def session() -> requests.Session:
 _S = session()
 
 
+class RateLimited(RuntimeError):
+    """The site said 'too many requests'. Retrying quickly only extends the block, so callers move on."""
+
+
 def get_text(url: str, ttl: float = 6 * 3600, headers: dict | None = None,
              sess: requests.Session | None = None, retries: int = 3) -> str:
     k = cache.key(url)
@@ -42,11 +46,24 @@ def get_text(url: str, ttl: float = 6 * 3600, headers: dict | None = None,
             if r.status_code == 200:
                 cache.put("http", k, r.text)
                 return r.text
+            if r.status_code == 429:
+                wait = _retry_after(r)
+                if i == 0 and wait <= 15:  # one polite retry if the site asks for a short pause
+                    time.sleep(wait)
+                    continue
+                raise RateLimited(f"HTTP 429 (rate limited) for {url}")
             last = RuntimeError(f"HTTP {r.status_code} for {url}")
         except requests.RequestException as e:  # network hiccup
             last = e
         time.sleep(1.5 * (i + 1))
     raise last or RuntimeError(url)
+
+
+def _retry_after(r) -> float:
+    try:
+        return float(r.headers.get("Retry-After", 5))
+    except ValueError:
+        return 5.0
 
 
 def download(url: str, headers: dict | None = None, sess: requests.Session | None = None) -> Path:

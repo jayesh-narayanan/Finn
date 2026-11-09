@@ -89,6 +89,12 @@ button.pill { border: 0; }
 .icon-btn:hover { background: var(--sunk); }
 .icon-btn svg { width: 20px; height: 20px; }
 
+.notice {
+  display: flex; width: 100%; align-items: center; gap: 8px; margin: 6px 0 0; padding: 9px 12px; text-align: left;
+  border: 0; border-radius: var(--radius-sm); background: var(--down-soft); color: var(--down); font-size: 13px; font-weight: 500;
+}
+.notice .chev { margin-left: auto; }
+
 /* ---------- hero: the filter itself */
 .hero { padding: 18px 0 10px; }
 .ratio {

@@ -20,22 +20,42 @@ def build(days: int = 30, enrich_items: bool = True) -> dict:
     cfg = portfolio_config()
     end = date.today()
     start = end - timedelta(days=days)
-    holdings, all_items, series = [], [], {}
+    holdings, all_items = [], []
+    syms = [h["symbol"] for h in cfg["portfolio"]]
+    log.info("prices for %d holdings", len(syms))
+    full, notes = prices.eod_many(syms)
+    series = {s: {k: v[k] for k in ("d", "c", "v")} for s, v in full.items()}
+    price_src = sorted({v["src"] for v in full.values()})
+    nse_fail = scr_fail = 0
+    nse_ok = False
     with llm.ledger() as led:
         for h in cfg["portfolio"]:
             sym = h["symbol"]
             log.info("· %s", sym)
-            p = prices.eod(sym, "6mo")
-            if p:
-                series[sym] = {"d": p["d"][-120:], "c": p["c"][-120:], "v": p["v"][-120:]}
+            p = series.get(sym)
             scr = None
-            try:
-                scr = screener.company(sym)
-            except Exception as e:  # noqa: BLE001
-                log.warning("screener %s: %s", sym, e)
+            if scr_fail < 3:
+                try:
+                    scr = screener.company(sym)
+                except Exception as e:  # noqa: BLE001
+                    scr_fail += 1
+                    log.warning("screener %s: %s", sym, e)
+                    if scr_fail == 3:
+                        notes.append(f"screener.in: skipped after 3 failures ({str(e)[:120]}). "
+                                     "Results cards fall back to the filing PDF only.")
             mcap = (scr or {}).get("top", {}).get("Market Cap")
-            items = nse.announcements(sym, start, end)
-            time.sleep(0.6)  # be polite to NSE
+            items = []
+            if nse_ok or nse_fail < 3:  # if NSE blocks the first three, don't spend minutes retrying the rest
+                try:
+                    items = nse.announcements(sym, start, end)
+                    nse_ok = True
+                except Exception as e:  # noqa: BLE001
+                    nse_fail += 1
+                    log.warning("NSE filings %s: %s", sym, e)
+                    if nse_fail == 3 and not nse_ok:
+                        notes.append(f"NSE filings: blocked on this network ({str(e)[:140]}). "
+                                     "The brief shows prices only.")
+                time.sleep(0.6)  # be polite to NSE
             classify.classify_all(items)
             for it in items:
                 it["name"] = h["name"]
@@ -59,10 +79,15 @@ def build(days: int = 30, enrich_items: bool = True) -> dict:
         "window_days": days, "holdings": holdings, "announcements": all_items, "prices": series,
         "default_rules": rules,
         "alerts": [a for s, p in series.items() for a in alerts.evaluate(s, p, rules, days=1)],
-        "cost": cost,
+        "cost": cost, "price_sources": price_src, "notes": notes,
     }
+    if nse_fail and nse_ok:
+        notes.append(f"NSE filings: failed for {nse_fail} of {len(syms)} holdings; run refresh again to retry.")
     (DATA / "feed.json").write_text(json.dumps(feed, indent=1, default=str))
-    log.info("feed: %d holdings, %d filings, cost %s", len(holdings), len(all_items), cost)
+    log.info("feed: %d holdings (%d priced via %s), %d filings, cost %s",
+             len(holdings), len(series), ", ".join(price_src) or "none", len(all_items), cost)
+    for n in notes:
+        log.warning("note: %s", n)
     return feed
 
 

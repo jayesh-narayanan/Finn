@@ -47,23 +47,25 @@ def _parse_dt(s: str) -> str:
 def announcements(symbol: str, start: date, end: date) -> list[dict]:
     url = ("https://www.nseindia.com/api/corporate-announcements?index=equities"
            f"&symbol={symbol}&from_date={start:%d-%m-%Y}&to_date={end:%d-%m-%Y}")
+    global _primed_at
     s = _nse()
-    raw = None
+    raw, last = None, "no response"
     for attempt in range(3):
         try:
             r = s.get(url, timeout=30)
             if r.status_code == 200 and r.text.strip().startswith(("[", "{")):
                 raw = r.json()
                 break
-            log.warning("NSE %s: HTTP %s (attempt %d)", symbol, r.status_code, attempt + 1)
+            last = f"HTTP {r.status_code}" + (" (not JSON: NSE served a block or login page)" if r.status_code == 200 else "")
+            log.warning("NSE %s: %s (attempt %d)", symbol, last, attempt + 1)
         except (ValueError, json.JSONDecodeError, Exception) as e:  # noqa: BLE001
+            last = str(e)[:120]
             log.warning("NSE %s: %s", symbol, e)
-        global _primed_at
         _primed_at = 0  # force re-prime
         s = _nse()
         time.sleep(2 * (attempt + 1))
     if raw is None:
-        return []
+        raise RuntimeError(f"NSE announcements unavailable: {last}")
     rows = raw.get("data", raw) if isinstance(raw, dict) else raw
     out = []
     for a in rows:

@@ -16,6 +16,7 @@ from .config import CACHE
 
 _DB = CACHE / "finn_cache.sqlite"
 _lock = threading.Lock()
+DISABLED = False  # set by `finn doctor` so checks hit the network, not yesterday's answers
 
 
 def _conn() -> sqlite3.Connection:
@@ -33,6 +34,8 @@ def key(*parts: Any) -> str:
 
 
 def get(ns: str, k: str, ttl: float | None = None) -> Any | None:
+    if DISABLED:
+        return None
     with _lock, _conn() as c:
         row = c.execute("SELECT v, ts FROM kv WHERE ns=? AND k=?", (ns, k)).fetchone()
     if not row:

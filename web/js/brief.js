@@ -21,6 +21,7 @@ export function render(root, rerender) {
 
   mount(root, 
     topbar(rerender),
+    sourceNotes(),
     hero(open.length, inWin.length, act, know.filter((x) => !x.done).length, routine.length, p.windowH),
     h("div", { class: "chips", role: "group", "aria-label": "Time window" },
       WINDOWS.map(([hrs, label]) => h("button", {
@@ -59,6 +60,16 @@ function topbar(rerender) {
     S.api ? h("button", { class: "icon-btn", "aria-label": "Refresh filings and prices", onclick: () => refresh(rerender) },
       h("span", { html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg>' })) : null,
   );
+}
+
+function sourceNotes() {
+  const notes = S.feed.notes || [];
+  if (!notes.length) return null;
+  return h("button", { class: "notice", onclick: () => sheet("Some sources didn't respond",
+    h("p", { class: "muted small" }, "The last refresh ran with what it could reach. Anything below is missing from this brief."),
+    h("ul", { class: "notes" }, notes.map((n) => h("li", { class: "bad" }, n))),
+    h("p", { class: "small" }, "Run ", h("code", {}, "python -m finn doctor"), " to see which sources work on your network.")) },
+  `Incomplete refresh: ${notes.length} ${notes.length === 1 ? "source" : "sources"} failed`, h("span", { class: "chev", "aria-hidden": "true" }, "›"));
 }
 
 function sampleNote() {

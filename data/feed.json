@@ -1,6 +1,6 @@
 {
  "mode": "sample",
- "generated_at": "2026-11-08T15:56:45",
+ "generated_at": "2026-11-09T03:32:45",
  "window_days": 30,
  "holdings": [
   {
@@ -712,7 +712,7 @@
   {
    "id": "434456f2738b",
    "symbol": "ORBITEMS",
-   "ts": "2026-11-08T09:56:45",
+   "ts": "2026-11-08T21:32:45",
    "subject": "Acquisition",
    "text": "Orbit Electronics Limited has informed the Exchange about signing of definitive agreements to acquire a 76% stake in Prism Components Private Limited for a consideration of Rs. 420 crore.",
    "url": null,
@@ -730,7 +730,7 @@
   {
    "id": "54ac9d73e3df",
    "symbol": "SAFFRONFIN",
-   "ts": "2026-11-08T06:56:45",
+   "ts": "2026-11-08T18:32:45",
    "subject": "Change in Directors/ Key Managerial Personnel/ Auditor/ Compliance Officer/ Share Transfer Agent",
    "text": "Resignation of Mr. Vikram Sethi as Chief Financial Officer and appointment of Ms. Anita Rao as Chief Financial Officer with effect from December 1, 2026.",
    "url": null,
@@ -773,7 +773,7 @@
   {
    "id": "bc6960626c34",
    "symbol": "HARBORBNK",
-   "ts": "2026-11-08T06:16:21",
+   "ts": "2026-11-08T17:52:21",
    "subject": "Allotment of ESOP / ESPS",
    "text": "Allotment of 12,450 equity shares under ESOP 2021.",
    "url": null,
@@ -789,7 +789,7 @@
   {
    "id": "8d64d600978e",
    "symbol": "KESTRELIT",
-   "ts": "2026-11-08T01:26:45",
+   "ts": "2026-11-08T13:02:45",
    "subject": "Analysts/Institutional Investor Meet/Con. Call Updates",
    "text": "Kestrel Infotech Limited has informed the Exchange about the earnings call scheduled on November 10, 2026.",
    "url": null,
@@ -805,7 +805,7 @@
   {
    "id": "963d2cac167c",
    "symbol": "KESTRELIT",
-   "ts": "2026-11-08T00:56:45",
+   "ts": "2026-11-08T12:32:45",
    "subject": "Financial Result Updates",
    "text": "Kestrel Infotech Limited has informed the Exchange regarding the Unaudited Financial Results for the quarter ended September 30, 2026.",
    "url": null,
@@ -873,7 +873,7 @@
   {
    "id": "210a85199096",
    "symbol": "SUTRATEX",
-   "ts": "2026-11-07T22:43:23",
+   "ts": "2026-11-08T10:19:23",
    "subject": "Loss of Share Certificates",
    "text": "Intimation of loss of share certificates.",
    "url": null,
@@ -889,7 +889,7 @@
   {
    "id": "f92c9ab2503d",
    "symbol": "TIDEWATER",
-   "ts": "2026-11-07T21:56:45",
+   "ts": "2026-11-08T09:32:45",
    "subject": "Bagging/Receiving of orders/contracts",
    "text": "Receipt of letter of award worth Rs. 1,150 crore for development of a container berth on a DBFOT basis.",
    "url": null,
@@ -908,7 +908,7 @@
   {
    "id": "70570a089e34",
    "symbol": "GANGAPWR",
-   "ts": "2026-11-07T20:56:45",
+   "ts": "2026-11-08T08:32:45",
    "subject": "Dividend",
    "text": "Board declared interim dividend of Rs. 2.50 per share; record date November 20, 2026.",
    "url": null,
@@ -925,7 +925,7 @@
   {
    "id": "b9a5fb05509d",
    "symbol": "CEDARHOME",
-   "ts": "2026-11-07T19:56:45",
+   "ts": "2026-11-08T07:32:45",
    "subject": "Disclosure of reasons for encumbrance",
    "text": "Promoter group has created a pledge on 12.4% of total shares of the company in favour of a lender.",
    "url": null,
@@ -942,7 +942,7 @@
   {
    "id": "001fa526e4f8",
    "symbol": "QUILLCHEM",
-   "ts": "2026-11-07T18:56:45",
+   "ts": "2026-11-08T06:32:45",
    "subject": "Updates",
    "text": "Board approved capex of Rs. 600 crore for a new specialty-amines plant at Dahej, to be commissioned by Q2 FY29.",
    "url": null,
@@ -960,7 +960,7 @@
   {
    "id": "b6448af099db",
    "symbol": "MERIDPHAR",
-   "ts": "2026-11-07T17:56:45",
+   "ts": "2026-11-08T05:32:45",
    "subject": "Updates",
    "text": "Meridian Pharma Limited has informed the Exchange that the USFDA has issued a warning letter to its Unit-3 oral solids facility following the inspection conducted in July 2026.",
    "url": null,
@@ -977,7 +977,7 @@
   {
    "id": "143b03e42d6c",
    "symbol": "VAYUMOTOR",
-   "ts": "2026-11-07T16:56:45",
+   "ts": "2026-11-08T04:32:45",
    "subject": "Press Release",
    "text": "Vayu Motors Limited has informed the Exchange regarding a press release.",
    "url": null,
@@ -994,7 +994,7 @@
   {
    "id": "8b158117ff13",
    "symbol": "PEAKCEM",
-   "ts": "2026-11-07T09:56:45",
+   "ts": "2026-11-07T21:32:45",
    "subject": "Credit Rating",
    "text": "Crest Ratings has downgraded the long-term rating of the company's bank facilities to A- with negative outlook from A, citing elevated debt after the Rajasthan line expansion.",
    "url": null,
@@ -1012,7 +1012,7 @@
   {
    "id": "83ee891a01e7",
    "symbol": "GANGAPWR",
-   "ts": "2026-11-07T03:17:28",
+   "ts": "2026-11-07T14:53:28",
    "subject": "Copy of Newspaper Publication",
    "text": "Newspaper publication of financial results.",
    "url": null,
@@ -1028,7 +1028,7 @@
   {
    "id": "da113d445b5f",
    "symbol": "HARBORBNK",
-   "ts": "2026-11-06T23:56:45",
+   "ts": "2026-11-07T11:32:45",
    "subject": "Financial Result Updates",
    "text": "Harbor Bank Limited has informed the Exchange regarding the financial results for the quarter ended September 30, 2026.",
    "url": null,
@@ -1088,7 +1088,6 @@
     "basis": "consolidated"
    },
    "name": "Harbor Bank",
-   "reaction_pct": -0.42,
    "score": 78,
    "why": [
     "Results filing"
@@ -1097,7 +1096,7 @@
   {
    "id": "d10e47a58ee6",
    "symbol": "VAYUMOTOR",
-   "ts": "2026-11-06T20:33:27",
+   "ts": "2026-11-07T08:09:27",
    "subject": "Shareholders meeting",
    "text": "Scrutinizer's report on e-voting.",
    "url": null,
@@ -1113,7 +1112,7 @@
   {
    "id": "81df3dc2311e",
    "symbol": "INDIGOTEL",
-   "ts": "2026-11-06T19:56:45",
+   "ts": "2026-11-07T07:32:45",
    "subject": "Analysts/Institutional Investor Meet/Con. Call Updates",
    "text": "Transcript of the earnings conference call held on November 4, 2026.",
    "url": null,
@@ -1130,7 +1129,7 @@
   {
    "id": "ee21b641f69e",
    "symbol": "LOTUSRET",
-   "ts": "2026-11-06T14:31:22",
+   "ts": "2026-11-07T02:07:22",
    "subject": "Allotment of ESOP / ESPS",
    "text": "Allotment of 12,450 equity shares under ESOP 2021.",
    "url": null,
@@ -1146,7 +1145,7 @@
   {
    "id": "176593bb01fa",
    "symbol": "SUTRATEX",
-   "ts": "2026-11-06T11:56:45",
+   "ts": "2026-11-06T23:32:45",
    "subject": "Insider Trading - SEBI (PIT) Regulations",
    "text": "Disclosure by promoter under Regulation 7(2): sale of 1,20,000 shares.",
    "url": null,
@@ -1165,7 +1164,7 @@
   {
    "id": "967285d3e8c7",
    "symbol": "MERIDPHAR",
-   "ts": "2026-11-06T10:51:51",
+   "ts": "2026-11-06T22:27:51",
    "subject": "Trading Window",
    "text": "Closure of trading window from October 1, 2026.",
    "url": null,
@@ -1181,7 +1180,7 @@
   {
    "id": "64ad6857d52a",
    "symbol": "CEDARHOME",
-   "ts": "2026-11-06T01:08:59",
+   "ts": "2026-11-06T12:44:59",
    "subject": "Trading Window",
    "text": "Closure of trading window from October 1, 2026.",
    "url": null,
@@ -1197,7 +1196,7 @@
   {
    "id": "6d7cfc866d32",
    "symbol": "NILGIRIBEV",
-   "ts": "2026-11-05T17:56:45",
+   "ts": "2026-11-06T05:32:45",
    "subject": "Financial Result Updates",
    "text": "Nilgiri Beverages Limited has informed the Exchange regarding the financial results for the quarter ended September 30, 2026.",
    "url": null,
@@ -1257,7 +1256,7 @@
     "basis": "consolidated"
    },
    "name": "Nilgiri Beverages",
-   "reaction_pct": -0.9,
+   "reaction_pct": 1.41,
    "score": 78,
    "why": [
     "Results filing"
@@ -1266,7 +1265,7 @@
   {
    "id": "13967f42a17b",
    "symbol": "ORBITEMS",
-   "ts": "2026-11-05T16:53:36",
+   "ts": "2026-11-06T04:29:35",
    "subject": "Loss of Share Certificates",
    "text": "Intimation of loss of share certificates.",
    "url": null,
@@ -1282,7 +1281,7 @@
   {
    "id": "11026691860a",
    "symbol": "CEDARHOME",
-   "ts": "2026-11-05T02:03:24",
+   "ts": "2026-11-05T13:39:23",
    "subject": "Copy of Newspaper Publication",
    "text": "Newspaper publication of notice to shareholders.",
    "url": null,
@@ -1298,7 +1297,7 @@
   {
    "id": "69d14f9c12ff",
    "symbol": "LOTUSRET",
-   "ts": "2026-11-04T15:56:45",
+   "ts": "2026-11-05T03:32:45",
    "subject": "Press Release",
    "text": "Opened 14 new stores in October, taking the count to 612 across 190 cities.",
    "url": null,
@@ -1306,7 +1305,7 @@
    "category": "press_release",
    "subtype": "pr",
    "name": "Lotus Retail",
-   "reaction_pct": -0.08,
+   "reaction_pct": -1.24,
    "score": 36,
    "why": [
     "Company update"
@@ -1316,7 +1315,7 @@
   {
    "id": "1ba4834d94f3",
    "symbol": "ALPINEINS",
-   "ts": "2026-11-03T15:56:45",
+   "ts": "2026-11-04T03:32:45",
    "subject": "Change in Directors/ Key Managerial Personnel/ Auditor/ Compliance Officer/ Share Transfer Agent",
    "text": "Appointment of Mr. Rohan Mehta as an Independent Director for a term of five years.",
    "url": null,
@@ -1324,7 +1323,7 @@
    "category": "management_change",
    "subtype": "mgmt",
    "name": "Alpine Insurance",
-   "reaction_pct": -2.02,
+   "reaction_pct": 1.1,
    "score": 40,
    "why": [
     "Management change",
@@ -1335,7 +1334,7 @@
   {
    "id": "c66283723b8b",
    "symbol": "INDIGOTEL",
-   "ts": "2026-11-03T15:19:43",
+   "ts": "2026-11-04T02:55:42",
    "subject": "Copy of Newspaper Publication",
    "text": "Newspaper publication of notice to shareholders.",
    "url": null,
@@ -1351,7 +1350,7 @@
   {
    "id": "aa1b73634c15",
    "symbol": "MERIDPHAR",
-   "ts": "2026-11-03T14:07:09",
+   "ts": "2026-11-04T01:43:08",
    "subject": "Loss of Share Certificates",
    "text": "Intimation of loss of share certificates.",
    "url": null,
@@ -1367,7 +1366,7 @@
   {
    "id": "5bfc746775ee",
    "symbol": "GANGAPWR",
-   "ts": "2026-11-03T08:14:43",
+   "ts": "2026-11-03T19:50:43",
    "subject": "Copy of Newspaper Publication",
    "text": "Newspaper publication of notice to shareholders.",
    "url": null,
@@ -1383,7 +1382,7 @@
   {
    "id": "ab54dca641ba",
    "symbol": "TIDEWATER",
-   "ts": "2026-11-02T09:56:45",
+   "ts": "2026-11-02T21:32:45",
    "subject": "Financial Result Updates",
    "text": "Financial results for the quarter ended September 30, 2026.",
    "url": null,
@@ -1452,7 +1451,7 @@
   {
    "id": "49b6a4339b28",
    "symbol": "CEDARHOME",
-   "ts": "2026-11-01T09:54:33",
+   "ts": "2026-11-01T21:30:33",
    "subject": "Copy of Newspaper Publication",
    "text": "Newspaper publication of notice to shareholders.",
    "url": null,
@@ -1468,7 +1467,7 @@
   {
    "id": "31f728792246",
    "symbol": "ORBITEMS",
-   "ts": "2026-10-31T07:56:45",
+   "ts": "2026-10-31T19:32:45",
    "subject": "Board Meeting Intimation",
    "text": "Board meeting to be held on November 7, 2026 to consider financial results.",
    "url": null,
@@ -1485,7 +1484,7 @@
   {
    "id": "8a777a9fb173",
    "symbol": "TIDEWATER",
-   "ts": "2026-10-31T04:14:16",
+   "ts": "2026-10-31T15:50:15",
    "subject": "Analysts/Institutional Investor Meet/Con. Call Updates",
    "text": "Schedule of meeting with institutional investors.",
    "url": null,
@@ -1501,7 +1500,7 @@
   {
    "id": "e228a621f65f",
    "symbol": "INDIGOTEL",
-   "ts": "2026-10-31T02:19:18",
+   "ts": "2026-10-31T13:55:18",
    "subject": "Shareholders meeting",
    "text": "Scrutinizer's report on e-voting.",
    "url": null,
@@ -1517,7 +1516,7 @@
   {
    "id": "1074de9c75c5",
    "symbol": "PEAKCEM",
-   "ts": "2026-10-29T10:23:52",
+   "ts": "2026-10-29T21:59:52",
    "subject": "Loss of Share Certificates",
    "text": "Intimation of loss of share certificates.",
    "url": null,
@@ -1533,7 +1532,7 @@
   {
    "id": "efde91ee5266",
    "symbol": "SAFFRONFIN",
-   "ts": "2026-10-28T19:56:45",
+   "ts": "2026-10-29T07:32:45",
    "subject": "Credit Rating",
    "text": "Crest Ratings has reaffirmed AAA/Stable on the company's NCD programme.",
    "url": null,
@@ -1541,18 +1540,19 @@
    "category": "credit_rating",
    "subtype": "rating",
    "name": "Saffron Finance",
-   "reaction_pct": -2.17,
-   "score": 30,
+   "reaction_pct": 3.65,
+   "score": 42,
    "why": [
     "Credit rating",
-    "Rating reaffirmed, no change"
+    "Rating reaffirmed, no change",
+    "Stock moved +3.6% that session (2.7\u03c3)"
    ],
    "summary": "Crest Ratings has reaffirmed AAA/Stable on the company's NCD programme."
   },
   {
    "id": "ba9ae160a126",
    "symbol": "GANGAPWR",
-   "ts": "2026-10-28T18:58:05",
+   "ts": "2026-10-29T06:34:05",
    "subject": "Shareholders meeting",
    "text": "Scrutinizer's report on e-voting.",
    "url": null,
@@ -1568,7 +1568,7 @@
   {
    "id": "b8bf71498001",
    "symbol": "MERIDPHAR",
-   "ts": "2026-10-27T16:04:48",
+   "ts": "2026-10-28T03:40:48",
    "subject": "Copy of Newspaper Publication",
    "text": "Newspaper publication of financial results.",
    "url": null,
@@ -1576,7 +1576,7 @@
    "category": "results",
    "subtype": "ad",
    "name": "Meridian Pharma",
-   "reaction_pct": 1.55,
+   "reaction_pct": -0.46,
    "score": 8,
    "why": [
     "Newspaper ad of results"
@@ -1585,7 +1585,7 @@
   {
    "id": "c29f8fe6b941",
    "symbol": "MERIDPHAR",
-   "ts": "2026-10-27T01:35:06",
+   "ts": "2026-10-27T13:11:05",
    "subject": "Analysts/Institutional Investor Meet/Con. Call Updates",
    "text": "Schedule of meeting with institutional investors.",
    "url": null,
@@ -1601,7 +1601,7 @@
   {
    "id": "d2a5523f72d2",
    "symbol": "ORBITEMS",
-   "ts": "2026-10-26T23:44:41",
+   "ts": "2026-10-27T11:20:41",
    "subject": "Shareholders meeting",
    "text": "Scrutinizer's report on e-voting.",
    "url": null,
@@ -1617,7 +1617,7 @@
   {
    "id": "6be2b20e3322",
    "symbol": "PEAKCEM",
-   "ts": "2026-10-26T07:56:45",
+   "ts": "2026-10-26T19:32:45",
    "subject": "Allotment of Securities",
    "text": "Allotment of non-convertible debentures aggregating Rs. 250 crore.",
    "url": null,
@@ -1637,7 +1637,7 @@
   {
    "id": "69472dbf01e3",
    "symbol": "QUILLCHEM",
-   "ts": "2026-10-23T14:34:30",
+   "ts": "2026-10-24T02:10:29",
    "subject": "Copy of Newspaper Publication",
    "text": "Newspaper publication of financial results.",
    "url": null,
@@ -1645,7 +1645,7 @@
    "category": "results",
    "subtype": "ad",
    "name": "Quill Chemicals",
-   "reaction_pct": 2.5,
+   "reaction_pct": -1.09,
    "score": 8,
    "why": [
     "Newspaper ad of results"
@@ -1654,7 +1654,7 @@
   {
    "id": "1bdb3deddd5c",
    "symbol": "TIDEWATER",
-   "ts": "2026-10-22T22:42:14",
+   "ts": "2026-10-23T10:18:13",
    "subject": "Trading Window",
    "text": "Closure of trading window from October 1, 2026.",
    "url": null,
@@ -1670,7 +1670,7 @@
   {
    "id": "b5d49c676d87",
    "symbol": "HARBORBNK",
-   "ts": "2026-10-22T20:07:15",
+   "ts": "2026-10-23T07:43:15",
    "subject": "Analysts/Institutional Investor Meet/Con. Call Updates",
    "text": "Schedule of meeting with institutional investors.",
    "url": null,
@@ -1686,7 +1686,7 @@
   {
    "id": "f6e7f1bfb1c2",
    "symbol": "ALPINEINS",
-   "ts": "2026-10-22T09:56:07",
+   "ts": "2026-10-22T21:32:06",
    "subject": "Copy of Newspaper Publication",
    "text": "Newspaper publication of notice to shareholders.",
    "url": null,
@@ -1702,7 +1702,7 @@
   {
    "id": "293b92d847ce",
    "symbol": "SUTRATEX",
-   "ts": "2026-10-22T06:00:04",
+   "ts": "2026-10-22T17:36:04",
    "subject": "Shareholders meeting",
    "text": "Scrutinizer's report on e-voting.",
    "url": null,
@@ -1718,7 +1718,7 @@
   {
    "id": "8ef8d64852b4",
    "symbol": "LOTUSRET",
-   "ts": "2026-10-22T04:46:31",
+   "ts": "2026-10-22T16:22:31",
    "subject": "Copy of Newspaper Publication",
    "text": "Newspaper publication of notice to shareholders.",
    "url": null,
@@ -1734,7 +1734,7 @@
   {
    "id": "64c61ed0308c",
    "symbol": "LOTUSRET",
-   "ts": "2026-10-22T03:55:17",
+   "ts": "2026-10-22T15:31:16",
    "subject": "Loss of Share Certificates",
    "text": "Intimation of loss of share certificates.",
    "url": null,
@@ -1750,7 +1750,7 @@
   {
    "id": "843b8408e7bf",
    "symbol": "ALPINEINS",
-   "ts": "2026-10-21T01:52:41",
+   "ts": "2026-10-21T13:28:40",
    "subject": "Trading Window",
    "text": "Closure of trading window from October 1, 2026.",
    "url": null,
@@ -1766,7 +1766,7 @@
   {
    "id": "b69c851584ed",
    "symbol": "SAFFRONFIN",
-   "ts": "2026-10-20T17:31:33",
+   "ts": "2026-10-21T05:07:33",
    "subject": "Allotment of ESOP / ESPS",
    "text": "Allotment of 12,450 equity shares under ESOP 2021.",
    "url": null,
@@ -1782,7 +1782,7 @@
   {
    "id": "0fa758d7290e",
    "symbol": "SAFFRONFIN",
-   "ts": "2026-10-20T14:53:30",
+   "ts": "2026-10-21T02:29:30",
    "subject": "Shareholders meeting",
    "text": "Scrutinizer's report on e-voting.",
    "url": null,
@@ -1798,7 +1798,7 @@
   {
    "id": "34b2efc3bd12",
    "symbol": "SAFFRONFIN",
-   "ts": "2026-10-18T22:28:51",
+   "ts": "2026-10-19T10:04:51",
    "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018",
    "text": "Certificate under Regulation 74(5).",
    "url": null,
@@ -1814,7 +1814,7 @@
   {
    "id": "a0f234945405",
    "symbol": "ORBITEMS",
-   "ts": "2026-10-18T17:46:21",
+   "ts": "2026-10-19T05:22:21",
    "subject": "Shareholders meeting",
    "text": "Scrutinizer's report on e-voting.",
    "url": null,
@@ -1830,7 +1830,7 @@
   {
    "id": "a927ad8ad725",
    "symbol": "GANGAPWR",
-   "ts": "2026-10-18T16:22:08",
+   "ts": "2026-10-19T03:58:07",
    "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018",
    "text": "Certificate under Regulation 74(5).",
    "url": null,
@@ -1846,7 +1846,7 @@
   {
    "id": "3b626323d62b",
    "symbol": "PEAKCEM",
-   "ts": "2026-10-18T11:02:48",
+   "ts": "2026-10-18T22:38:47",
    "subject": "Analysts/Institutional Investor Meet/Con. Call Updates",
    "text": "Schedule of meeting with institutional investors.",
    "url": null,
@@ -1862,7 +1862,7 @@
   {
    "id": "cf02bac6bb28",
    "symbol": "VAYUMOTOR",
-   "ts": "2026-10-17T18:28:29",
+   "ts": "2026-10-18T06:04:28",
    "subject": "Loss of Share Certificates",
    "text": "Intimation of loss of share certificates.",
    "url": null,
@@ -1878,7 +1878,7 @@
   {
    "id": "b1e85a00fd90",
    "symbol": "VAYUMOTOR",
-   "ts": "2026-10-17T17:14:32",
+   "ts": "2026-10-18T04:50:32",
    "subject": "Trading Window",
    "text": "Closure of trading window from October 1, 2026.",
    "url": null,
@@ -1894,7 +1894,7 @@
   {
    "id": "88a52ce3b50c",
    "symbol": "INDIGOTEL",
-   "ts": "2026-10-17T12:03:45",
+   "ts": "2026-10-17T23:39:45",
    "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018",
    "text": "Certificate under Regulation 74(5).",
    "url": null,
@@ -1910,7 +1910,7 @@
   {
    "id": "2e8e66d7fc9b",
    "symbol": "TIDEWATER",
-   "ts": "2026-10-16T22:33:41",
+   "ts": "2026-10-17T10:09:41",
    "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018",
    "text": "Certificate under Regulation 74(5).",
    "url": null,
@@ -1926,7 +1926,7 @@
   {
    "id": "9819816cd21e",
    "symbol": "SUTRATEX",
-   "ts": "2026-10-16T08:07:06",
+   "ts": "2026-10-16T19:43:06",
    "subject": "Copy of Newspaper Publication",
    "text": "Newspaper publication of financial results.",
    "url": null,
@@ -1943,7 +1943,7 @@
   {
    "id": "d1d758b21b75",
    "symbol": "MERIDPHAR",
-   "ts": "2026-10-14T20:26:21",
+   "ts": "2026-10-15T08:02:21",
    "subject": "Trading Window",
    "text": "Closure of trading window from October 1, 2026.",
    "url": null,
@@ -1959,7 +1959,7 @@
   {
    "id": "ba4616c51410",
    "symbol": "NILGIRIBEV",
-   "ts": "2026-10-14T11:00:32",
+   "ts": "2026-10-14T22:36:32",
    "subject": "Copy of Newspaper Publication",
    "text": "Newspaper publication of notice to shareholders.",
    "url": null,
@@ -1975,7 +1975,7 @@
   {
    "id": "e4ea050567a6",
    "symbol": "CEDARHOME",
-   "ts": "2026-10-13T03:47:34",
+   "ts": "2026-10-13T15:23:34",
    "subject": "Analysts/Institutional Investor Meet/Con. Call Updates",
    "text": "Schedule of meeting with institutional investors.",
    "url": null,
@@ -1991,7 +1991,7 @@
   {
    "id": "78a5b78118ff",
    "symbol": "INDIGOTEL",
-   "ts": "2026-10-12T16:10:54",
+   "ts": "2026-10-13T03:46:53",
    "subject": "Shareholders meeting",
    "text": "Scrutinizer's report on e-voting.",
    "url": null,
@@ -2007,7 +2007,7 @@
   {
    "id": "edb2946ede3f",
    "symbol": "ALPINEINS",
-   "ts": "2026-10-12T03:45:18",
+   "ts": "2026-10-12T15:21:18",
    "subject": "Copy of Newspaper Publication",
    "text": "Newspaper publication of financial results.",
    "url": null,
@@ -2024,7 +2024,7 @@
   {
    "id": "a2057a400543",
    "symbol": "INDIGOTEL",
-   "ts": "2026-10-11T05:25:50",
+   "ts": "2026-10-11T17:01:50",
    "subject": "Loss of Share Certificates",
    "text": "Intimation of loss of share certificates.",
    "url": null,
@@ -2040,7 +2040,7 @@
   {
    "id": "41647826f08f",
    "symbol": "TIDEWATER",
-   "ts": "2026-10-10T22:20:14",
+   "ts": "2026-10-11T09:56:13",
    "subject": "Copy of Newspaper Publication",
    "text": "Newspaper publication of financial results.",
    "url": null,
