@@ -16,6 +16,10 @@ from .score import score, tier
 log = logging.getLogger("finn.digest")
 
 
+class KeptPrevious(RuntimeError):
+    """The refresh couldn't reach a core source, so the last good feed was left in place."""
+
+
 def build(days: int = 30, enrich_items: bool = True) -> dict:
     cfg = portfolio_config()
     end = date.today()
@@ -81,6 +85,19 @@ def build(days: int = 30, enrich_items: bool = True) -> dict:
         "alerts": [a for s, p in series.items() for a in alerts.evaluate(s, p, rules, days=1)],
         "cost": cost, "price_sources": price_src, "notes": notes,
     }
+    prev = DATA / "feed.json"
+    if prev.exists():
+        try:
+            old_feed = json.loads(prev.read_text())
+        except ValueError:
+            old_feed = None
+        # A cloud server that NSE blocks would otherwise publish an empty brief over a good one.
+        if old_feed and old_feed.get("mode") == "live" and old_feed.get("announcements"):
+            if not nse_ok:
+                raise KeptPrevious("NSE didn't respond to this server, so the brief from "
+                                   f"{old_feed.get('generated_at', 'the last refresh')} is still shown.")
+            if not series and old_feed.get("prices"):
+                raise KeptPrevious("No price source responded, so the previous brief is still shown.")
     if nse_fail and nse_ok:
         notes.append(f"NSE filings: failed for {nse_fail} of {len(syms)} holdings; run refresh again to retry.")
     (DATA / "feed.json").write_text(json.dumps(feed, indent=1, default=str))

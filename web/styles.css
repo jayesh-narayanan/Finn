@@ -252,9 +252,9 @@ button.pill { border: 0; }
 .search { display: flex; gap: 8px; margin: 12px 0; }
 .search input {
   flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--surface); border-radius: 11px;
-  padding: 11px 13px; font-size: 16px; text-transform: uppercase;
+  padding: 11px 13px; font-size: 16px;
 }
-.search input::placeholder { text-transform: none; color: var(--ink-3); }
+.search input::placeholder { color: var(--ink-3); }
 .dlist { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--line); overflow: hidden; }
 .dlink { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-top: 1px solid var(--line); color: var(--ink); }
 .dlink:first-child { border-top: 0; }

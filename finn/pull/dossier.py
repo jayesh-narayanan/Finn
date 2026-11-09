@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from datetime import datetime
 from typing import Callable
 
@@ -26,6 +27,10 @@ Use ONLY the excerpts. Return JSON:
 {"what_it_does":"<2 sentences>","segments":[{"name":"","share_pct":<number or null>,"note":"<=12 words","page":<int>}],
  "geography":"<one line or empty>","customers":"<one line or empty>"}
 share_pct only if the excerpt states revenue share or the segment revenue to compute it."""
+
+# Annual reports run to 300-400 pages. The business overview, segments and MD&A sit in the first
+# ~200; parsing the rest costs minutes and memory on a small server for little gain.
+AR_MAX_PAGES = int(os.environ.get("FINN_AR_MAX_PAGES", "200"))
 
 SNAPSHOT_Q = "segment revenue business overview products customers geography share of revenue segment results"
 
@@ -71,7 +76,7 @@ def build(symbol: str, progress: Callable[[str, int], None] = lambda s, p: None,
             progress("Scanning the annual report", 75)
             ar_chunks = []
             try:
-                pages = documents.fetch_pages(ar["url"])
+                pages = documents.fetch_pages(ar["url"], max_pages=AR_MAX_PAGES)
                 ar_chunks = documents.chunks(pages, "A1")
                 all_chunks += ar_chunks
             except Exception as e:  # noqa: BLE001
@@ -132,13 +137,30 @@ Cite every factual sentence with markers like [T2 p4] or [SCR-PL] matching the p
 Return JSON {{"answer":"","cites":[{{"src":"T2","page":4}}]}}"""
 
 
+def _rebuild_chunks(d: dict) -> list[dict]:
+    """A report built on another machine (or before a server restart) has no text index here yet.
+    Re-read its source documents once; later questions hit the cache."""
+    out = []
+    for s in d.get("sources", []):
+        if s.get("type") not in ("transcript", "annual_report") or not s.get("url"):
+            continue
+        try:
+            mp = AR_MAX_PAGES if s["type"] == "annual_report" else None
+            out += documents.chunks(documents.fetch_pages(s["url"], max_pages=mp), s["id"])
+        except Exception as e:  # noqa: BLE001
+            log.warning("ask: couldn't re-read %s: %s", s.get("label"), e)
+    if out:
+        cache.put("chunks", d["symbol"], out)
+    return out
+
+
 def ask(symbol: str, question: str) -> dict:
     symbol = symbol.upper()
     p = RESEARCH / f"{symbol}.json"
     if not p.exists():
         raise FileNotFoundError(f"No dossier for {symbol} yet; build it first.")
     d = json.loads(p.read_text())
-    chunks = cache.get("chunks", symbol) or []
+    chunks = cache.get("chunks", symbol) or _rebuild_chunks(d)
     top = documents.BM25(chunks).search(question, k=7) if chunks else []
     nums = metrics.actuals_table(d["metrics"])
     ctx = "\n\n".join(f"[{c['src']} p{c['page']}] {c['text']}" for c in top)

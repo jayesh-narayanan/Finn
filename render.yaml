@@ -1,0 +1,28 @@
+# Render blueprint: Dashboard > New > Blueprint > pick this repo. Render asks for FINN_LLM_API_KEY once.
+services:
+  - type: web
+    name: finn
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # One worker so research jobs and their progress live in one process; threads serve requests meanwhile.
+    startCommand: gunicorn finn.server:app --workers 1 --threads 8 --timeout 120 --bind 0.0.0.0:$PORT
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: FINN_LLM_API_KEY
+        sync: false
+      - key: FINN_LLM_BASE_URL
+        value: https://generativelanguage.googleapis.com/v1beta/openai/
+      - key: FINN_FAST_MODEL
+        value: gemini-3.5-flash-lite
+      - key: FINN_SMART_MODEL
+        value: gemini-3.5-flash
+      - key: FINN_SEARCH_API_KEY
+        sync: false
+      - key: FINN_MAX_BUILDS
+        value: "2"
+      - key: FINN_AR_MAX_PAGES
+        value: "200"

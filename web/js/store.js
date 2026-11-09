@@ -34,7 +34,7 @@ export async function load() {
   const [feed, idx, health] = await Promise.all([
     getJSON("data/feed.json"),
     getJSON("data/research/index.json").catch(() => []),
-    fetch("api/health", { signal: AbortSignal.timeout(2500) }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+    fetch("api/health", { signal: AbortSignal.timeout(8000) }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
   ]);
   S.feed = feed;
   S.research = idx;

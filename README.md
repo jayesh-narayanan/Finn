@@ -60,8 +60,21 @@ If a source fails, the refresh carries on and the app shows an "Incomplete refre
 
 ### Deploy
 
-- **Static (simplest to try on a phone):** `python -m finn build-static` writes `dist/` with the app and the latest data. Drop it on Vercel, Netlify or GitHub Pages. Research is limited to dossiers you built.
-- **With the server:** any Python host (Render, Railway, Fly) running `python -m finn serve --port $PORT`. NSE blocks many cloud IP ranges, so the reliable pattern is to run `refresh` from a home machine or a scheduled job and push `data/`.
+**Full app on Render (recommended: research works on any company).** The repo includes `render.yaml`.
+
+1. On https://render.com sign in with GitHub, then **New > Blueprint** and pick this repo.
+2. Render asks for `FINN_LLM_API_KEY` (and optionally `FINN_SEARCH_API_KEY`). Paste your key and click **Apply**.
+3. The first build takes about 5 minutes. Your app is then at `https://finn-XXXX.onrender.com`.
+
+Things to know about the free tier:
+
+- It sleeps after 15 idle minutes, and the first visit after that takes ~30-50 s to wake. A free pinger (cron-job.org or UptimeRobot) hitting `/api/health` every 10 minutes keeps it awake; one service running all month fits in the free hours.
+- Its disk resets on every deploy or restart. The brief and the research committed in `data/` always come back; reports built on the server last until the next restart.
+- NSE often blocks cloud servers, so **Refresh** on Render may be refused. FINN then keeps the last good brief and says so; it never publishes an empty one. Refresh locally and push `data/` to update it (Render redeploys on push).
+
+What it handles in public: symbols, Yahoo-style tickers (`TCS.NS`) or company names (`Asian Paints`), resolved through screener.in's search; two people asking for the same company share one job; at most two reports build at once (`FINN_MAX_BUILDS`); each visitor gets 8 reports, 30 questions and 2 refreshes an hour, so the model quota can't be drained (`FINN_RESEARCH_PER_HOUR`, `FINN_ASKS_PER_HOUR`, `FINN_REFRESH_PER_HOUR`).
+
+**Static (no server).** `python -m finn build-static` writes `dist/` with the app and the latest data, for Netlify, Vercel or GitHub Pages. Research is limited to the reports you built, and the ask box is off.
 
 ## How it works
 

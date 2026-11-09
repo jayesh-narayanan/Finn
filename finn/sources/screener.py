@@ -131,3 +131,53 @@ def row(t: dict | None, *names: str) -> list | None:
             if label.lower().startswith(n.lower()):
                 return vals
     return None
+
+
+# ------------------------------------------------------------------ finding the company
+class NotFound(RuntimeError):
+    """Nothing on screener.in matches what the investor typed."""
+
+
+def clean_query(q: str) -> str:
+    """'reliance.ns' -> 'RELIANCE'; 'NSE:TCS' -> 'TCS'; keeps names like 'Asian Paints' intact."""
+    q = re.sub(r"\s+", " ", (q or "").strip())
+    q = re.sub(r"^(NSE|BSE)\s*:\s*", "", q, flags=re.I)
+    q = re.sub(r"\.(NS|BO)$", "", q, flags=re.I)
+    return q[:60]
+
+
+def looks_like_symbol(q: str) -> bool:
+    return bool(re.fullmatch(r"[A-Za-z0-9&\-]{2,20}", q))
+
+
+def search(q: str) -> list[dict]:
+    """screener.in's own company search (what its search box calls). [{name, symbol}]"""
+    import json
+    from urllib.parse import quote
+    raw = get_text(f"https://www.screener.in/api/company/search/?q={quote(q)}&v=3&fts=1", ttl=7 * 86400)
+    out = []
+    for r in json.loads(raw) or []:
+        m = re.match(r"/company/([^/]+)/", r.get("url") or "")
+        if m and r.get("name"):
+            out.append({"name": r["name"], "symbol": m.group(1).upper()})
+    return out
+
+
+def resolve(q: str) -> str:
+    """Best screener symbol for what was typed: the symbol itself if it exists, else the top search hit."""
+    q = clean_query(q)
+    if not q:
+        raise NotFound("Type an NSE symbol or a company name")
+    if looks_like_symbol(q):
+        try:
+            company(q.upper())
+            return q.upper()
+        except Exception as e:  # noqa: BLE001 - not a symbol screener knows: search by name instead
+            log.info("'%s' isn't a screener symbol (%s); searching", q, e)
+    try:
+        hits = search(q)
+    except Exception as e:  # noqa: BLE001
+        raise NotFound(f"Couldn't search screener.in for '{q}': {e}") from e
+    if not hits:
+        raise NotFound(f"No listed company matches '{q}'. Try its NSE symbol, like PIDILITIND.")
+    return hits[0]["symbol"]

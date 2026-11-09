@@ -7,4 +7,5 @@ pdfplumber>=0.11
 pandas>=2.0
 yfinance>=0.2.58
 curl_cffi>=0.10
+gunicorn>=22.0
 pytest>=8.0

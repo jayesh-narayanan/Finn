@@ -26,10 +26,10 @@ export async function render(root, rerender, sym) {
 // ------------------------------------------------------------------ list + build
 function renderList(root, rerender, wanted) {
   const input = h("input", {
-    name: "symbol", value: wanted || "", placeholder: "NSE symbol, e.g. PIDILITIND", autocomplete: "off",
-    autocapitalize: "characters", spellcheck: "false", "aria-label": "NSE symbol", maxlength: "20",
+    name: "symbol", value: wanted || "", placeholder: S.api ? "Symbol or company, e.g. Pidilite" : "NSE symbol, e.g. PIDILITIND", autocomplete: "off",
+    autocapitalize: "characters", spellcheck: "false", "aria-label": "NSE symbol or company name", maxlength: "60",
   });
-  const form = h("form", { class: "search", onsubmit: (e) => { e.preventDefault(); go(input.value.trim().toUpperCase(), rerender); } },
+  const form = h("form", { class: "search", onsubmit: (e) => { e.preventDefault(); go(input.value, rerender); } },
     input, h("button", { class: "btn primary", type: "submit" }, "Open"));
   mount(root, 
     h("header", { class: "top" }, h("span", { class: "brand" }, "Research")),
@@ -62,36 +62,46 @@ function missing(sym, rerender) {
   return h("div", { class: "empty", style: { marginTop: "12px" } },
     h("h3", {}, `No research on ${sym} yet`),
     S.api
-      ? [h("p", {}, "Building it reads the last four call transcripts and the latest annual report. It takes a minute or two."),
+      ? [h("p", {}, "Building it reads the last four call transcripts and the latest annual report. It takes two to four minutes; you can leave this screen and come back."),
          h("button", { class: "btn primary", onclick: () => build(sym, rerender) }, `Build research on ${sym}`)]
       : h("p", {}, "Building new research needs the FINN server running (python -m finn serve). The companies below are ready to read."));
 }
 
-async function go(sym, rerender) {
-  if (!/^[A-Z0-9&-]{2,20}$/.test(sym)) { toast("Enter an NSE symbol, like PIDILITIND"); return; }
-  if (S.research.some((x) => x.symbol === sym)) { location.hash = `#research/${sym}`; return; }
-  if (S.api) build(sym, rerender);
-  else location.hash = `#research/${sym}`;
+async function go(raw, rerender) {
+  const q = raw.trim().replace(/^(NSE|BSE)\s*:\s*/i, "").replace(/\.(NS|BO)$/i, "");
+  if (q.length < 2) { toast("Type an NSE symbol or a company name"); return; }
+  const sym = q.toUpperCase();
+  const known = S.research.find((x) => x.symbol === sym || x.name.toUpperCase() === sym);
+  if (known) { location.hash = `#research/${known.symbol}`; return; }
+  if (S.api) build(q, rerender);
+  else if (/^[A-Z0-9&-]{2,20}$/.test(sym)) location.hash = `#research/${sym}`;
+  else toast("Searching by name needs the FINN server. Try a symbol from the list below.");
 }
 
-async function build(sym, rerender) {
+async function build(query, rerender) {
   try {
-    const { job } = await postJSON("api/research", { symbol: sym });
-    building = { symbol: sym, job, step: "Starting", pct: 2 };
+    const { job } = await postJSON("api/research", { query });
+    building = { symbol: query.toUpperCase(), job, step: "Finding the company", pct: 2 };
     location.hash = "#research";
     rerender();
+    let misses = 0;
     for (;;) {
       await new Promise((r) => setTimeout(r, 1500));
-      const j = await getJSON(`api/jobs/${job}`);
+      let j;
+      try { j = await getJSON(`api/jobs/${job}`); misses = 0; } catch (e) {
+        if (++misses < 5) continue;  // a slow response or a brief network blip: keep waiting
+        throw new Error("Lost touch with the server while building. It may have restarted; try again.");
+      }
       Object.assign(building, j);
       if (j.status === "done") {
+        const sym = j.symbol;
         building = null;
         S.research = await getJSON("data/research/index.json").catch(() => S.research);
         delete cache[sym];
         location.hash = `#research/${sym}`;
         return;
       }
-      if (j.status === "error") { building = null; toast(`Couldn't build ${sym}: ${j.error}`); rerender(); return; }
+      if (j.status === "error") { building = null; toast(j.error); rerender(); return; }
       if (location.hash === "#research") rerender();
     }
   } catch (e) { building = null; toast(e.message); rerender(); }
