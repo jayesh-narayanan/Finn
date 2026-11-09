@@ -66,8 +66,8 @@ def available() -> bool:
 def _cfg(tier: str):
     base = env("FINN_LLM_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai/").rstrip("/")
     key = env("FINN_LLM_API_KEY", "")
-    model = env("FINN_FAST_MODEL", "gemini-2.5-flash-lite") if tier == "fast" else \
-        env("FINN_SMART_MODEL", "gemini-2.5-flash")
+    model = env("FINN_FAST_MODEL", "gemini-3.5-flash-lite") if tier == "fast" else \
+        env("FINN_SMART_MODEL", "gemini-3.5-flash")
     p = env(f"FINN_PRICE_{tier.upper()}")
     price = tuple(float(x) for x in p.split(",")) if p else _DEFAULT_PRICES[tier]
     return base, key, model, price
@@ -133,15 +133,20 @@ def pick_model(tier: str, ids: list[str]) -> str | None:
     return best(flash) or best([m for m in chat if "pro" in m]) or best(chat)
 
 
+_RETIRED = re.compile(r"not found|no longer available|deprecated|not supported|retired|discontinued", re.I)
+
+
 def _resolve(tier: str, configured: str, why: str) -> str:
+    """The configured model was refused. Use the replacement the API suggests, else the newest stable one."""
     ids = list_models()
-    if configured in ids:
-        raise LLMConfigError(f"Model {configured} is listed but the call failed: {why}")
-    m = pick_model(tier, ids)
+    suggested = re.search(r"use (?:models/)?([\w.\-]+[\w])", why)
+    m = suggested.group(1) if suggested and suggested.group(1) in ids else None
+    m = m or pick_model(tier, [i for i in ids if i != configured])
     if not m:
-        raise LLMConfigError(f"Model {configured} isn't available and no chat model was found. Available: {', '.join(ids[:20])}")
+        raise LLMConfigError(f"Model {configured} was refused ({why[:160]}) and no other chat model was found. "
+                             f"Available: {', '.join(ids[:20])}")
     env_name = "FINN_FAST_MODEL" if tier == "fast" else "FINN_SMART_MODEL"
-    log.warning("Model %s isn't available on this API (%s). Using %s instead; set %s=%s in .env to make this permanent.",
+    log.warning("Model %s was refused (%s). Using %s instead; set %s=%s in .env to make this permanent.",
                 configured, why[:120], m, env_name, m)
     _resolved[tier] = m
     return m
@@ -178,7 +183,8 @@ def complete(tier: str, system: str, user: str, *, as_json: bool = True,
             last = e
             time.sleep(3 * (attempt + 1))
             continue
-        if r.status_code == 404 and not resolved_once:  # model retired or renamed: find the current one
+        if r.status_code in (400, 404) and not resolved_once and _RETIRED.search(_err_text(r)) \
+                and not re.search(r"api key", _err_text(r), re.I):  # model retired or renamed: switch once
             resolved_once = True
             model = _resolve(tier, model, _err_text(r))
             k = cache.key(model, system, user, as_json, max_tokens)

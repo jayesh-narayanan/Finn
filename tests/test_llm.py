@@ -56,3 +56,31 @@ def test_pick_model_prefers_newest_stable():
     assert llm.pick_model("fast", ids) == "gemini-3.0-flash-lite"
     assert llm.pick_model("smart", ids) == "gemini-3.0-flash"
     assert llm.pick_model("smart", ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]) == "llama-3.3-70b-versatile"
+
+
+def test_listed_but_refused_model_follows_the_api_suggestion(monkeypatch, api):
+    msg = ("This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code "
+           "to use models/gemini-3.0-flash-lite for the latest features and improvements.")
+    served = {"gemini-3.0-flash-lite"}
+
+    def post(url, json=None, headers=None, timeout=None):
+        if json["model"] not in served:
+            return R(404, [{"error": {"code": 404, "message": msg}}])
+        return R(200, {"choices": [{"message": {"content": '{"ok": true}'}}]})
+
+    def get(url, headers=None, timeout=None):  # the refused model is still listed, as Gemini does
+        return R(200, {"data": [{"id": "models/gemini-2.5-flash-lite"}, {"id": "models/gemini-3.0-flash-lite"},
+                                {"id": "models/gemini-3.0-flash"}]})
+    monkeypatch.setattr(llm.requests, "post", post)
+    monkeypatch.setattr(llm.requests, "get", get)
+    assert llm.complete("fast", "sys", "x") == {"ok": True}
+    assert llm.model_for("fast") == "gemini-3.0-flash-lite"
+
+
+def test_pick_model_on_the_list_your_key_returned():
+    ids = ("gemini-2.5-flash, gemini-2.5-pro, gemini-2.5-flash-preview-tts, gemini-2.5-pro-preview-tts, gemma-4-26b-a4b-it, "
+           "gemini-flash-latest, gemini-flash-lite-latest, gemini-pro-latest, gemini-2.5-flash-lite, gemini-2.5-flash-image, "
+           "gemini-3-flash-preview, gemini-3.1-pro-preview, gemini-3.1-flash-lite-preview, gemini-3.1-flash-lite, "
+           "gemini-3.1-flash-image, gemini-3.1-flash-lite-image, gemini-3.5-flash, gemini-3.5-flash-lite").split(", ")
+    assert llm.pick_model("fast", ids) == "gemini-3.5-flash-lite"
+    assert llm.pick_model("smart", ids) == "gemini-3.5-flash"

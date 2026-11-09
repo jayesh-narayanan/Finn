@@ -46,7 +46,18 @@ def pdf_pages(path: Path, max_pages: int | None = None) -> list[str]:
 
 
 def fetch_pages(url: str, max_pages: int | None = None) -> list[str]:
-    return pdf_pages(download(url), max_pages)
+    path = download(url)
+    if path.suffix == ".zip" or path.read_bytes()[:2] == b"PK":  # some filings attach a zip of PDFs
+        import zipfile
+        out = path.with_suffix(".unzipped.pdf")
+        if not out.exists():
+            with zipfile.ZipFile(path) as z:
+                pdfs = sorted((i for i in z.infolist() if i.filename.lower().endswith(".pdf")), key=lambda i: -i.file_size)
+                if not pdfs:
+                    raise RuntimeError(f"zip attachment has no PDF inside: {url}")
+                out.write_bytes(z.read(pdfs[0]))
+        path = out
+    return pdf_pages(path, max_pages)
 
 
 def chunks(pages: list[str], source_id: str, size: int = 1400, overlap: int = 200) -> list[dict]:
